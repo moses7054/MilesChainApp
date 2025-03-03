@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Orbitron } from "next/font/google";
 import "./globals.css";
+import WalletContextProvider from "./context/WalletContextProvider";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -21,9 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${orbitron.variable} font-cyber bg-cyber-gradient min-h-screen px-4 md:px-8 lg:px-12`}
+        className={`${orbitron.variable} font-cyber bg-cyber-gradient min-h-screen px-4 md:px-8 lg:px-12 overflow-x-hidden`}
       >
-        <div className="max-w-[1920px] mx-auto">{children}</div>
+        <WalletContextProvider>
+          <div className="max-w-[1920px] mx-auto relative">{children}</div>
+        </WalletContextProvider>
       </body>
     </html>
   );

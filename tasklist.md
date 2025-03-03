@@ -36,12 +36,12 @@
     { title: "COMPANY", path: "/company", icon: "briefcase" },
   ];
   ```
-- [ ] Implement wallet connect integration
+- [x] Implement wallet connect integration
 - [x] Add cyberpunk background pattern
 
 ## 🧱 Core Components
 
-- [ ] Create WalletButton component
+- [x] Create WalletButton component
 - [ ] Build TransactionStatus component
 - [x] Design CyberForm component for inputs
 - [ ] Create LoadingSpinner with purple animation
@@ -83,7 +83,7 @@
 
 ## 🔄 State Management
 
-- [ ] Set up wallet context
+- [x] Set up wallet context
 - [ ] Create account type store
 - [ ] Implement transaction state management
 

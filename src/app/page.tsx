@@ -1,3 +1,5 @@
+import WalletButton from "./components/WalletButton";
+
 export default function Home() {
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -62,37 +64,56 @@ export default function Home() {
         </svg>
       </div>
 
+      {/* Header with Wallet Button - Fixed position */}
+      <header className="fixed top-0 right-0 z-30 p-4 w-full">
+        <div className="flex justify-end">
+          <WalletButton />
+        </div>
+      </header>
+
       {/* Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen pt-0">
-        <div className="text-center px-4 sm:px-6 md:px-8 max-w-4xl mx-auto">
+      <div className="relative z-10 flex items-center justify-center min-h-screen">
+        <div className="text-center px-4 sm:px-6 md:px-8 max-w-4xl mx-auto pt-16 md:pt-0">
           <div className="mb-8 animate-[float_4s_ease-in-out_infinite]">
-            <h1 className="text-6xl sm:text-7xl md:text-8xl font-cyber mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyber-pink to-cyber-purple">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-cyber mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyber-pink to-cyber-purple">
               MilestoneChain
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mt-4">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mt-4">
               Revolutionizing Project Funding Through Blockchain
             </p>
           </div>
 
-          <div className="cyber-card backdrop-blur-lg bg-opacity-20 p-6 md:p-8 mb-12">
-            <p className="text-lg text-gray-300">
+          <div className="cyber-card backdrop-blur-lg bg-opacity-20 p-4 sm:p-6 md:p-8 mb-8 md:mb-12">
+            <p className="text-base sm:text-lg text-gray-300">
               Secure • Transparent • Decentralized
             </p>
           </div>
 
           {/* Portal Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-8 md:mt-12">
             <div className="cyber-card hover:scale-105 transition-transform">
-              <h3 className="text-xl mb-4 text-cyber-pink">Admin Portal</h3>
-              <button className="cyber-button w-full">Enter →</button>
+              <h3 className="text-lg sm:text-xl mb-3 md:mb-4 text-cyber-pink">
+                Admin Portal
+              </h3>
+              <button className="cyber-button w-full text-sm sm:text-base py-2 sm:py-3 px-3 sm:px-4">
+                Enter →
+              </button>
             </div>
             <div className="cyber-card hover:scale-105 transition-transform">
-              <h3 className="text-xl mb-4 text-cyber-pink">NGO Portal</h3>
-              <button className="cyber-button w-full">Enter →</button>
+              <h3 className="text-lg sm:text-xl mb-3 md:mb-4 text-cyber-pink">
+                NGO Portal
+              </h3>
+              <button className="cyber-button w-full text-sm sm:text-base py-2 sm:py-3 px-3 sm:px-4">
+                Enter →
+              </button>
             </div>
             <div className="cyber-card hover:scale-105 transition-transform">
-              <h3 className="text-xl mb-4 text-cyber-pink">Company Portal</h3>
-              <button className="cyber-button w-full">Enter →</button>
+              <h3 className="text-lg sm:text-xl mb-3 md:mb-4 text-cyber-pink">
+                Company Portal
+              </h3>
+              <button className="cyber-button w-full text-sm sm:text-base py-2 sm:py-3 px-3 sm:px-4">
+                Enter →
+              </button>
             </div>
           </div>
         </div>
