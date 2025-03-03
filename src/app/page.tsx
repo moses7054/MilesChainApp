@@ -94,7 +94,7 @@ export default function Home() {
               Chain
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mt-2 sm:mt-4 px-2">
-              Revolutionizing Milestone Funding Through Blockchain
+              Funding Made Ease
             </p>
           </div>
 
