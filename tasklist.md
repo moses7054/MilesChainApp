@@ -42,7 +42,7 @@
 ## 🧱 Core Components
 
 - [x] Create WalletButton component
-- [ ] Build TransactionStatus component
+- [⏳] Build TransactionStatus component
 - [x] Design CyberForm component for inputs
 - [ ] Create LoadingSpinner with purple animation
 
