@@ -1,0 +1,2246 @@
+{
+  "address": "3ekfBBpPEzHCe3Z9DPE9wp7Hgx82LoCGMWS83ez6Ctnj",
+  "metadata": {
+    "name": "milestone",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "close_temp_account",
+      "discriminator": [
+        80,
+        79,
+        87,
+        235,
+        222,
+        107,
+        213,
+        127
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "project_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account.company_pubkey",
+                "account": "ProjectAccount"
+              },
+              {
+                "kind": "account",
+                "path": "project_account.project_name",
+                "account": "ProjectAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "temp_transaction_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  109,
+                  112,
+                  95,
+                  116,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              },
+              {
+                "kind": "account",
+                "path": "temp_transaction_account.ngo_account_pubkey",
+                "account": "TempTransactionAccount"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_project",
+      "discriminator": [
+        148,
+        219,
+        181,
+        42,
+        221,
+        114,
+        145,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "company"
+          ]
+        },
+        {
+          "name": "company",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  112,
+                  97,
+                  110,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "company"
+              },
+              {
+                "kind": "arg",
+                "path": "project_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_ata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "vault_account"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "signer_ata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "admin",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "project_name",
+          "type": "string"
+        },
+        {
+          "name": "requirements_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "max_submissions_allowed",
+          "type": "u16"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "edit_ngo_reuirements",
+      "discriminator": [
+        212,
+        44,
+        120,
+        135,
+        197,
+        178,
+        185,
+        156
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "ngo",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  103,
+                  111
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "temp_transaction_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  109,
+                  112,
+                  95,
+                  116,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "temp_transaction_account.project_account_pubkey",
+                "account": "TempTransactionAccount"
+              },
+              {
+                "kind": "account",
+                "path": "ngo"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "close",
+          "type": "bool"
+        },
+        {
+          "name": "submitted_requirements_hash",
+          "type": {
+            "option": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "edit_project_account",
+      "discriminator": [
+        56,
+        104,
+        85,
+        216,
+        108,
+        163,
+        245,
+        187
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "company"
+          ]
+        },
+        {
+          "name": "company",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  112,
+                  97,
+                  110,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account.company_pubkey",
+                "account": "ProjectAccount"
+              },
+              {
+                "kind": "arg",
+                "path": "project_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "status",
+          "type": {
+            "option": {
+              "defined": {
+                "name": "ProjectStatus"
+              }
+            }
+          }
+        },
+        {
+          "name": "requirements_hash",
+          "type": {
+            "option": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        },
+        {
+          "name": "close",
+          "type": "bool"
+        },
+        {
+          "name": "_project_name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "init_admin",
+      "discriminator": [
+        97,
+        65,
+        97,
+        27,
+        200,
+        206,
+        72,
+        219
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_ata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "max_projects",
+          "type": "u32"
+        },
+        {
+          "name": "fee_basis_points",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "init_company",
+      "discriminator": [
+        4,
+        20,
+        200,
+        152,
+        94,
+        207,
+        211,
+        98
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "company",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  112,
+                  97,
+                  110,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "business_reg_num",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "init_ngo",
+      "discriminator": [
+        117,
+        237,
+        199,
+        110,
+        135,
+        173,
+        100,
+        249
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "ngo",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  103,
+                  111
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "initiate_project",
+      "discriminator": [
+        141,
+        45,
+        252,
+        49,
+        10,
+        159,
+        154,
+        22
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "ngo",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  103,
+                  111
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account.company_pubkey",
+                "account": "ProjectAccount"
+              },
+              {
+                "kind": "arg",
+                "path": "project_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "temp_transaction_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  109,
+                  112,
+                  95,
+                  116,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              },
+              {
+                "kind": "account",
+                "path": "ngo"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "project_name",
+          "type": "string"
+        },
+        {
+          "name": "submitted_requirements_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "process_project_funding",
+      "discriminator": [
+        228,
+        60,
+        35,
+        195,
+        112,
+        99,
+        62,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "company"
+          ]
+        },
+        {
+          "name": "company",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  112,
+                  97,
+                  110,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account.company_pubkey",
+                "account": "ProjectAccount"
+              },
+              {
+                "kind": "arg",
+                "path": "project_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ngo",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  103,
+                  111
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ngo.ngo_signer",
+                "account": "NgoAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project_completion_details",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116,
+                  95,
+                  99,
+                  111,
+                  109,
+                  112,
+                  108,
+                  101,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  100,
+                  101,
+                  116,
+                  97,
+                  105,
+                  108,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              },
+              {
+                "kind": "account",
+                "path": "ngo"
+              }
+            ]
+          }
+        },
+        {
+          "name": "temp_transaction_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  109,
+                  112,
+                  95,
+                  116,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              },
+              {
+                "kind": "account",
+                "path": "ngo"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "status",
+          "type": {
+            "defined": {
+              "name": "Status"
+            }
+          }
+        },
+        {
+          "name": "merkel_root",
+          "type": {
+            "option": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "process_project_payment",
+      "discriminator": [
+        88,
+        4,
+        217,
+        163,
+        147,
+        4,
+        166,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "project_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account.company_pubkey",
+                "account": "ProjectAccount"
+              },
+              {
+                "kind": "arg",
+                "path": "project_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "vault_ata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "vault_account"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "ngo",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  103,
+                  111
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ngo.ngo_signer",
+                "account": "NgoAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ngo_ata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "ngosigner_pubkey"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "ngosigner_pubkey"
+        },
+        {
+          "name": "project_completion_details",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116,
+                  95,
+                  99,
+                  111,
+                  109,
+                  112,
+                  108,
+                  101,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  100,
+                  101,
+                  116,
+                  97,
+                  105,
+                  108,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              },
+              {
+                "kind": "account",
+                "path": "ngo"
+              }
+            ]
+          }
+        },
+        {
+          "name": "temp_transaction_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  109,
+                  112,
+                  95,
+                  116,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project_account"
+              },
+              {
+                "kind": "account",
+                "path": "ngo"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_ata",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "admin.admin_signer_pubkey",
+                "account": "Admin"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdc_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_project_name",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Admin",
+      "discriminator": [
+        244,
+        158,
+        220,
+        65,
+        8,
+        73,
+        4,
+        65
+      ]
+    },
+    {
+      "name": "CompanyAccount",
+      "discriminator": [
+        37,
+        215,
+        171,
+        200,
+        8,
+        141,
+        69,
+        96
+      ]
+    },
+    {
+      "name": "NgoAccount",
+      "discriminator": [
+        147,
+        248,
+        39,
+        222,
+        235,
+        182,
+        48,
+        242
+      ]
+    },
+    {
+      "name": "ProjectAccount",
+      "discriminator": [
+        179,
+        110,
+        82,
+        178,
+        208,
+        35,
+        171,
+        116
+      ]
+    },
+    {
+      "name": "ProjectCompletionDetails",
+      "discriminator": [
+        114,
+        101,
+        174,
+        73,
+        145,
+        30,
+        220,
+        203
+      ]
+    },
+    {
+      "name": "TempTransactionAccount",
+      "discriminator": [
+        50,
+        167,
+        251,
+        143,
+        40,
+        57,
+        235,
+        66
+      ]
+    },
+    {
+      "name": "Vault",
+      "discriminator": [
+        211,
+        8,
+        232,
+        43,
+        2,
+        152,
+        117,
+        119
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "PaymentEvent",
+      "discriminator": [
+        132,
+        136,
+        157,
+        119,
+        91,
+        254,
+        225,
+        20
+      ]
+    },
+    {
+      "name": "ProcessProjectEvent",
+      "discriminator": [
+        201,
+        84,
+        158,
+        75,
+        80,
+        172,
+        7,
+        203
+      ]
+    },
+    {
+      "name": "ProjectApplyEvent",
+      "discriminator": [
+        38,
+        193,
+        132,
+        96,
+        72,
+        52,
+        199,
+        17
+      ]
+    },
+    {
+      "name": "ProjectCreationEvent",
+      "discriminator": [
+        230,
+        92,
+        83,
+        93,
+        108,
+        239,
+        79,
+        178
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "MaxProjectsReached",
+      "msg": "max project limit reached"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidAmount",
+      "msg": "amount not specified"
+    },
+    {
+      "code": 6002,
+      "name": "MaxApplicationReached",
+      "msg": "max ngo application reached"
+    },
+    {
+      "code": 6003,
+      "name": "ProjectClosed",
+      "msg": "Cannot apply. Project closed"
+    },
+    {
+      "code": 6004,
+      "name": "ProjectNotAccepted",
+      "msg": "This ngo's appliaction is not accepted"
+    },
+    {
+      "code": 6005,
+      "name": "ProjectStatusWrong",
+      "msg": "wrong project status cannot disburse funds"
+    },
+    {
+      "code": 6006,
+      "name": "InsufficientVaultBalance",
+      "msg": "Insufficient balance in vault to cover fee and payment"
+    },
+    {
+      "code": 6007,
+      "name": "ProjectNotClosed",
+      "msg": "Project not closed"
+    },
+    {
+      "code": 6008,
+      "name": "ProjectStatusNotAllowed",
+      "msg": "This status cannot be used"
+    },
+    {
+      "code": 6009,
+      "name": "ProjectWrongStatus",
+      "msg": "The status of project account should be NotOpenForApplication for changing the requirements"
+    },
+    {
+      "code": 6010,
+      "name": "NgoRequirementsNotAllowed",
+      "msg": "Ngo application already accepted , cannot change reuirements now"
+    }
+  ],
+  "types": [
+    {
+      "name": "Admin",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin_signer_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "max_projects",
+            "type": "u32"
+          },
+          {
+            "name": "fee_basis_points",
+            "type": "u16"
+          },
+          {
+            "name": "admin_bump",
+            "type": "u8"
+          },
+          {
+            "name": "admin_ata",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CompanyAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "business_reg_num",
+            "type": "string"
+          },
+          {
+            "name": "company_bump",
+            "type": "u8"
+          },
+          {
+            "name": "total_projects",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NgoAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "ngo_signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "completed_projects",
+            "type": "u32"
+          },
+          {
+            "name": "merkel_root",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "ngo_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project_account_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "ngo_account_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "payment",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProcessProjectEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "ngo_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProjectAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "company_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "project_name",
+            "type": "string"
+          },
+          {
+            "name": "requirements_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "ProjectStatus"
+              }
+            }
+          },
+          {
+            "name": "max_submissions_allowed",
+            "type": "u16"
+          },
+          {
+            "name": "total_submissions",
+            "type": "u16"
+          },
+          {
+            "name": "project_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProjectApplyEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project_account_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "ngo_account_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "submitted_requirements_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProjectCompletionDetails",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "ngo_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "merkel_root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "completion_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProjectCreationEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "company_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "project_name",
+            "type": "string"
+          },
+          {
+            "name": "requirements_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProjectStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "OpenForApplication"
+          },
+          {
+            "name": "Funded"
+          },
+          {
+            "name": "InProgress"
+          },
+          {
+            "name": "Closed"
+          },
+          {
+            "name": "NotOpenForApplication"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Status",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Accepted"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TempTransactionAccount",
+      "docs": [
+        "Temporary account for tracking project-related transactions."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project_account_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "ngo_signer_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "ngo_account_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "submitted_requirements_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "TempTransactionAccountStatus"
+              }
+            }
+          },
+          {
+            "name": "temp_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TempTransactionAccountStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Processing"
+          },
+          {
+            "name": "Accepted"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_ata",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

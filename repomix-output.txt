@@ -1,0 +1,1320 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: programs/milestone/src
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+
+Additional Info:
+----------------
+
+================================================================
+Directory Structure
+================================================================
+programs/
+  milestone/
+    src/
+      instructions/
+        apply_project.rs
+        close_accounts_tempaccount.rs
+        create_projext.rs
+        edit_ngo_reuirements.rs
+        edit_project_account.rs
+        initialize_admin.rs
+        intialize_company.rs
+        intialize_ngo.rs
+        mod.rs
+        process_payment_close_accounts.rs
+        process_project.rs
+        text
+      state/
+        admin.rs
+        company.rs
+        mod.rs
+        ngo.rs
+        project_completion.rs
+        project.rs
+        status_enum.rs
+        temp_transaction.rs
+        vault.rs
+      errors.rs
+      lib.rs
+
+================================================================
+Files
+================================================================
+
+================
+File: programs/milestone/src/instructions/apply_project.rs
+================
+use anchor_lang::prelude::*;
+use anchor_spl::associated_token::spl_associated_token_account::instruction;
+
+use crate::{
+    errors::ProjectError,
+    state::{NgoAccount, ProjectAccount, ProjectStatus, TempTransactionAccount},
+};
+
+#[event]
+pub struct ProjectApplyEvent {
+    pub project_account_pubkey: Pubkey,
+    pub ngo_account_pubkey: Pubkey,
+    pub submitted_requirements_hash: [u8; 32],
+}
+// project created --> event emitted
+// on dashoboard of ngo it appears. applies -->comes here
+// inputs: companyPubkey, projectName
+// update status on project_account
+// event emitted and updated on companies side
+// companies accepts , rejects, closes project.
+// close related accounts
+#[derive(Accounts)]
+#[instruction(project_name: String)]
+pub struct ApplyProject<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account( seeds=[b"ngo",signer.key().as_ref()], bump= ngo.ngo_bump )]
+    ngo: Account<'info, NgoAccount>,
+
+    #[account(
+        seeds = [b"project",project_account.company_pubkey.as_ref(),project_name.as_bytes() ],
+        bump = project_account.project_bump
+        )]
+    pub project_account: Account<'info, ProjectAccount>,
+
+    #[account(init, payer= signer, seeds= [b"temp_tx", project_account.key().as_ref(), ngo.key().as_ref()], space = TempTransactionAccount::INIT_SPACE, bump)]
+    pub temp_transaction_account: Account<'info, TempTransactionAccount>,
+
+    pub system_program: Program<'info, System>,
+}
+
+impl<'info> ApplyProject<'info> {
+    pub fn apply_project(
+        &mut self,
+        _project_name: String,
+        submitted_requirements_hash: [u8; 32],
+        bumps: &ApplyProjectBumps,
+    ) -> Result<()> {
+        require!(
+            self.project_account.total_submissions < self.project_account.max_submissions_allowed,
+            ProjectError::MaxApplicationReached
+        );
+        require!(
+            !matches!(
+                self.project_account.status,
+                ProjectStatus::Closed | ProjectStatus::Funded
+            ),
+            ProjectError::ProjectClosed
+        );
+
+        self.temp_transaction_account
+            .set_inner(TempTransactionAccount {
+                project_account_pubkey: self.project_account.key(),
+                ngo_signer_pubkey: self.signer.key(),
+                ngo_account_pubkey: self.ngo.key(),
+                submitted_requirements_hash,
+                status: crate::state::TempTransactionAccountStatus::Processing,
+                temp_bump: bumps.temp_transaction_account,
+            });
+        self.project_account.total_submissions += 1;
+
+        emit!(ProjectApplyEvent {
+            project_account_pubkey: self.project_account.key(),
+            ngo_account_pubkey: self.signer.key(),
+            submitted_requirements_hash: submitted_requirements_hash
+        });
+
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/close_accounts_tempaccount.rs
+================
+use anchor_lang::prelude::*;
+
+
+use crate::{errors::ProjectError, state::{ProjectAccount, ProjectStatus, TempTransactionAccount}};
+
+// accounts needed -> project_account, temptransactionaccount,
+// check project_account - status is Funded or closed
+// then close temp_transaction_account
+
+// TODO test 
+
+
+#[derive(Accounts)]
+pub struct CloseAccountTemp<'info> {
+    #[account(mut)]
+    signer: Signer<'info>,
+
+    #[account(
+        seeds = [b"project",project_account.company_pubkey.as_ref(),project_account.project_name.as_bytes() ],
+        bump= project_account.project_bump,
+        )]
+    pub project_account: Account<'info, ProjectAccount>,
+
+    #[account( 
+        mut,
+        close = signer,
+        seeds= [b"temp_tx", project_account.key().as_ref(), temp_transaction_account.ngo_account_pubkey.key().as_ref()],
+        bump= temp_transaction_account.temp_bump
+    )]
+    pub temp_transaction_account: Account<'info, TempTransactionAccount>,
+}
+
+
+impl <'info> CloseAccountTemp<'info> {
+
+    pub fn close_accounts(&mut self) ->Result<()>{
+        
+        require!(self.project_account.status == ProjectStatus::Closed, ProjectError::ProjectNotClosed );
+
+        Ok(())
+    }
+    
+}
+
+================
+File: programs/milestone/src/instructions/create_projext.rs
+================
+use anchor_lang::prelude::*;
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{self, Mint, Token, TokenAccount, Transfer},
+};
+
+// check with project max in company_account - done
+// initialize project account - done
+// create vault and transfer usdc - done
+// updtae total projects in company_Account - done
+
+use crate::{
+    errors::ProjectError,
+    state::{Admin, CompanyAccount, ProjectAccount, ProjectStatus, Vault},
+};
+
+#[event]
+pub struct ProjectCreationEvent {
+    pub company_pubkey: Pubkey, // Company's public key
+    pub project_name: String,
+    pub requirements_hash: [u8; 32],
+}
+
+#[derive(Accounts)]
+#[instruction(project_name: String )]
+pub struct InitializeProject<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>, //signer , creating project
+
+    #[account(
+        mut,
+        has_one = signer,
+        seeds = [b"company", signer.key().as_ref()],
+        bump = company.company_bump
+    )]
+    pub company: Box<Account<'info, CompanyAccount>>, // to check company account exist or not
+
+    #[account(init,
+    payer= signer,
+    seeds = [b"project",company.key().as_ref(),project_name.as_bytes() ],
+    space = 8 + ProjectAccount::INIT_SPACE, //using drive space
+    bump
+    )]
+    pub project_account: Box<Account<'info, ProjectAccount>>, // project account
+
+    #[account(init,
+        payer = signer,
+        seeds = [b"vault", project_account.key().as_ref()],
+        space =  Vault::INIT_SPACE, // manually getting space so 8 is already considered
+        bump
+     )]
+    pub vault_account: Box<Account<'info, Vault>>, //controls vault ata
+
+    #[account(
+        init,
+        payer = signer,
+        associated_token::mint = usdc_mint,
+        associated_token::authority = vault_account,
+    )]
+    pub vault_ata: Box<Account<'info, TokenAccount>>, // Stores usdc
+
+    #[account(
+        mut,
+        associated_token::mint = usdc_mint,
+        associated_token::authority = signer,
+    )]
+    pub signer_ata: Box<Account<'info, TokenAccount>>, // signers ata , storying usdc
+
+    pub usdc_mint: Box<Account<'info, Mint>>, // mint of usdc
+
+    #[account( seeds = [b"admin"],
+    bump=admin.admin_bump)]
+    pub admin: Box<Account<'info, Admin>>,
+
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+impl<'info> InitializeProject<'info> {
+    pub fn verify_and_create_project(
+        &mut self,
+        project_name: String,
+        requirements_hash: [u8; 32],
+        max_submissions_allowed: u16,
+        bumps: &InitializeProjectBumps,
+    ) -> Result<()> {
+        require!(
+            self.company.total_projects < self.admin.max_projects,
+            ProjectError::MaxProjectsReached
+        );
+        self.project_account.set_inner(ProjectAccount {
+            company_pubkey: self.company.key(),
+            project_name: project_name.clone(),
+            requirements_hash,
+            status: ProjectStatus::OpenForApplication,
+            max_submissions_allowed,
+            total_submissions: 0,
+            project_bump: bumps.project_account,
+        });
+
+        self.company.total_projects += 1; // updating company account
+
+        emit!(ProjectCreationEvent {
+            company_pubkey: self.company.key(),
+            project_name: project_name,
+            requirements_hash: requirements_hash
+        });
+
+        Ok(())
+    }
+
+    pub fn deposit(&mut self, amount: u64, bumps: &InitializeProjectBumps) -> Result<()> {
+        require!(amount != 0, ProjectError::InvalidAmount);
+
+        self.vault_account.set_inner(Vault {
+            project_key: self.project_account.key(),
+            vault_ata: self.vault_ata.key(),
+            vault_bump: bumps.vault_account,
+        });
+
+        let from = self.signer_ata.to_account_info();
+        let to = self.vault_ata.to_account_info();
+
+        let cpi_program = self.token_program.to_account_info();
+
+        let cpi_accounts = Transfer {
+            from,
+            to,
+            authority: self.signer.to_account_info(),
+        };
+
+        let ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+        token::transfer(ctx, amount)?;
+
+        self.project_account.status = ProjectStatus::OpenForApplication;
+
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/edit_ngo_reuirements.rs
+================
+use anchor_lang::prelude::*;
+
+use crate::{errors::ProjectError, state::{NgoAccount, TempTransactionAccount, TempTransactionAccountStatus}};
+
+
+
+// TODO test 
+
+
+#[derive(Accounts)]
+pub struct EditNgoApplication<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account( seeds=[b"ngo",signer.key().as_ref()], bump= ngo.ngo_bump )]
+    ngo: Account<'info, NgoAccount>,
+
+    #[account( 
+        mut,
+        seeds= [b"temp_tx", temp_transaction_account.project_account_pubkey.as_ref(), ngo.key().as_ref()],
+        bump= temp_transaction_account.temp_bump
+    )]
+    pub temp_transaction_account: Account<'info, TempTransactionAccount>,
+}
+
+impl <'info>EditNgoApplication<'info>  {
+    pub fn edit_ngo_reuirements(&mut self, close: bool, submitted_requirements_hash: Option<[u8; 32]> ) -> Result<()> {
+        if close {
+            self.temp_transaction_account.close(self.signer.to_account_info())?;
+
+            return Ok(());
+        }
+
+        if let Some(submitted_requirements_hash_value) = submitted_requirements_hash {
+            require!(self.temp_transaction_account.status != TempTransactionAccountStatus::Accepted, ProjectError::NgoRequirementsNotAllowed );
+
+            self.temp_transaction_account.submitted_requirements_hash = submitted_requirements_hash_value;
+        }
+
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/edit_project_account.rs
+================
+use anchor_lang::{prelude::*, system_program::Transfer};
+
+use crate::{
+    errors::ProjectError,
+    state::{CompanyAccount, ProjectAccount, ProjectStatus},
+};
+
+// TODO test
+
+#[derive(Accounts)]
+#[instruction(project_name: String)]
+pub struct EditProject<'info> {
+    #[account(mut)]
+    signer: Signer<'info>,
+
+    #[account(
+        mut,
+        has_one = signer,
+        seeds = [b"company", signer.key().as_ref()],
+        bump = company.company_bump
+    )]
+    pub company: Account<'info, CompanyAccount>,
+
+    #[account(
+        mut,
+        seeds = [b"project",project_account.company_pubkey.as_ref(),project_name.as_bytes() ],
+        bump = project_account.project_bump
+        )]
+    pub project_account: Account<'info, ProjectAccount>,
+
+    pub system_program: Program<'info, System>,
+}
+
+impl<'info> EditProject<'info> {
+    pub fn edit_project_account(
+        &mut self,
+        status: Option<ProjectStatus>,
+        requirements_hash: Option<[u8; 32]>,
+        close: bool,
+    ) -> Result<()> {
+        if let Some(status_value) = status {
+            require!(
+                matches!(
+                    status_value,
+                    ProjectStatus::OpenForApplication | ProjectStatus::NotOpenForApplication
+                ),
+                ProjectError::ProjectStatusNotAllowed
+            );
+
+            self.project_account.status = status_value;
+
+            return Ok(());
+        }
+
+        if let Some(requirements_hash_value) = requirements_hash {
+            require!(
+                self.project_account.status == ProjectStatus::NotOpenForApplication,
+                ProjectError::ProjectWrongStatus
+            );
+            self.project_account.requirements_hash = requirements_hash_value;
+
+            return Ok(());
+        }
+
+        if close {
+            self.project_account.close(self.signer.to_account_info())?;
+        }
+
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/initialize_admin.rs
+================
+use anchor_lang::prelude::*;
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{Mint, Token, TokenAccount},
+};
+
+use crate::state::Admin;
+
+#[derive(Accounts)]
+pub struct InitializeAdmin<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account(
+        init,
+        payer = signer,
+        seeds = [b"admin"],
+        bump,
+        space = 8 + Admin::INIT_SPACE,
+    )]
+    pub admin: Account<'info, Admin>,
+
+    #[account(
+        init_if_needed,
+        payer=signer,
+        associated_token::mint = usdc_mint,
+        associated_token::authority = signer,
+    )]
+    pub admin_ata: Account<'info, TokenAccount>, // admin ata , storying usdc
+
+    pub usdc_mint: Account<'info, Mint>, // mint of usdc
+
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+impl<'info> InitializeAdmin<'info> {
+    pub fn intialize_admin(
+        &mut self,
+        max_projects: u32,
+        fee_basis_points: u16,
+        bumps: &InitializeAdminBumps,
+    ) -> Result<()> {
+        self.admin.set_inner(Admin {
+            admin_signer_pubkey: self.signer.key(),
+            max_projects,
+            fee_basis_points,
+            admin_bump: bumps.admin,
+            admin_ata: self.admin_ata.key(),
+        });
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/intialize_company.rs
+================
+use anchor_lang::prelude::*;
+
+use crate::state::CompanyAccount;
+
+#[derive(Accounts)]
+pub struct InitializeCompany<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    #[account(
+        init,
+        payer = signer,
+        seeds = [b"company", signer.key().as_ref()],
+        bump,
+        space = 8 + CompanyAccount::INIT_SPACE,
+    )]
+    pub company: Account<'info, CompanyAccount>,
+
+    pub system_program: Program<'info, System>,
+}
+
+impl<'info> InitializeCompany<'info> {
+    pub fn intialize_company(
+        &mut self,
+        name: String,
+        business_reg_num: String,
+
+        bumps: &InitializeCompanyBumps,
+    ) -> Result<()> {
+        self.company.set_inner(CompanyAccount {
+            signer: self.signer.key(),
+            name,
+            company_bump: bumps.company,
+            business_reg_num,
+            total_projects: 0,
+        });
+
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/intialize_ngo.rs
+================
+use anchor_lang::prelude::*;
+
+use crate::state::NgoAccount;
+
+#[derive(Accounts)]
+pub struct InitializeNgo<'info> {
+    #[account(mut)]
+    signer: Signer<'info>,
+
+    #[account(init, payer = signer, seeds=[b"ngo",signer.key().as_ref()], space = 8 + NgoAccount::INIT_SPACE, bump )]
+    ngo: Account<'info, NgoAccount>,
+
+    system_program: Program<'info, System>,
+}
+
+impl<'info> InitializeNgo<'info> {
+    pub fn initialize_ngo(&mut self, name: String, bumps: &InitializeNgoBumps) -> Result<()> {
+        self.ngo.set_inner(NgoAccount {
+            name,
+            completed_projects: 0,
+            merkel_root: None,
+            ngo_bump: bumps.ngo,
+            ngo_signer: self.signer.key(),
+        });
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/mod.rs
+================
+pub mod apply_project;
+pub mod close_accounts_tempaccount;
+pub mod create_projext;
+pub mod edit_ngo_reuirements;
+pub mod edit_project_account;
+pub mod initialize_admin;
+pub mod intialize_company;
+pub mod intialize_ngo;
+pub mod process_payment_close_accounts;
+pub mod process_project;
+
+pub use apply_project::*;
+pub use close_accounts_tempaccount::*;
+pub use create_projext::*;
+pub use edit_ngo_reuirements::*;
+pub use edit_project_account::*;
+pub use initialize_admin::*;
+pub use intialize_company::*;
+pub use intialize_ngo::*;
+pub use process_payment_close_accounts::*;
+pub use process_project::*;
+
+================
+File: programs/milestone/src/instructions/process_payment_close_accounts.rs
+================
+use anchor_lang::prelude::*;
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{ transfer, Mint, Token, TokenAccount, Transfer},
+};
+
+use crate::{errors::ProjectError, state::{
+    Admin, NgoAccount, ProjectAccount, ProjectCompletionDetails, ProjectStatus, TempTransactionAccount, TempTransactionAccountStatus, Vault
+}};
+
+
+
+
+
+#[event]
+pub struct  PaymentEvent{
+    pub project_account_pubkey: Pubkey,
+    pub ngo_account_pubkey: Pubkey,
+    pub payment: String
+}
+
+// send usdc from vaultAta to ngoAta
+// create ngoAta if not there
+// close accounts vaultAta, vaultAccount, TempTransactionAccount
+// check ngo_pubkey match in ProjectCompletionDetails, check project_account status, check TempTransactionAccount status
+// check signer with the company account
+
+// accounts needed - company, project, vaultAccount, vaultAta, NgoAccount, ProjectCompletionDetails, TempTransactionAccount
+
+#[derive(Accounts)]
+#[instruction(project_name: String)]
+pub struct ProcessPayment<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account(
+        seeds = [b"project",project_account.company_pubkey.as_ref(),project_name.as_bytes() ],
+        bump = project_account.project_bump
+        )]
+    pub project_account: Account<'info, ProjectAccount>,
+
+    #[account(
+        mut,
+        close = signer,
+        seeds = [b"vault", project_account.key().as_ref()],
+        bump = vault_account.vault_bump
+     )]
+    pub vault_account: Account<'info, Vault>,
+
+    pub usdc_mint: Account<'info, Mint>,
+
+    #[account(
+        mut,
+        close = signer,
+        associated_token::mint = usdc_mint,
+        associated_token::authority = vault_account,
+    )]
+    pub vault_ata: Account<'info, TokenAccount>,
+
+    #[account(
+        seeds=[b"ngo",ngo.ngo_signer.as_ref()],
+        bump = ngo.ngo_bump 
+    )]
+    pub ngo: Account<'info, NgoAccount>,
+
+  
+    #[account(
+        init_if_needed,
+        payer = signer,
+        associated_token::mint = usdc_mint,
+        associated_token::authority = ngosigner_pubkey
+    )]
+    pub ngo_ata: Account<'info, TokenAccount>,
+
+    #[account(address = ngo.ngo_signer)]
+    pub ngosigner_pubkey: SystemAccount<'info>,
+
+    #[account( 
+        seeds = [b"project_completion_details",
+        project_account.key().as_ref(), ngo.key().as_ref()],
+        bump = project_completion_details.completion_bump
+    )]
+    pub project_completion_details: Account<'info, ProjectCompletionDetails>,
+
+    #[account( 
+        mut,
+        close = ngosigner_pubkey,
+        seeds= [b"temp_tx", project_account.key().as_ref(), ngo.key().as_ref()],
+        bump= temp_transaction_account.temp_bump
+    )]
+    pub temp_transaction_account: Account<'info, TempTransactionAccount>,
+
+    #[account( seeds = [b"admin"],
+    bump=admin.admin_bump)]
+    pub admin: Account<'info, Admin>,
+
+    #[account(
+        associated_token::mint = usdc_mint,
+        associated_token::authority = admin.admin_signer_pubkey,
+    )]
+    pub admin_ata: Account<'info, TokenAccount>,
+
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+impl<'info> ProcessPayment<'info> {
+    pub fn make_checks(&mut self) -> Result<()> {
+
+        require!(
+            matches!(self.temp_transaction_account.status, TempTransactionAccountStatus::Accepted), ProjectError::ProjectNotAccepted
+        );
+
+        require!(
+            self.project_account.status == ProjectStatus::Funded,
+            ProjectError::ProjectStatusWrong
+        );
+        
+        Ok(())
+    }
+    
+
+    pub fn payment(&mut self) ->Result<()>{
+
+        self.project_account.status = ProjectStatus::Closed;
+
+        let total_amount = self.vault_ata.amount;
+        let fee_amount = self.admin.calculate_fee(total_amount);
+        let payment_amount_to_ngo = total_amount - fee_amount;
+
+        // Check if vault_ata has enough balance for both fee and payment
+        require!(self.vault_ata.amount >= total_amount, ProjectError::InsufficientVaultBalance);
+
+        // 1. Transfer Fee to Admin Account
+        if fee_amount > 0 { // Only transfer fee if it's greater than zero
+            let accounts_to_admin_fee_transfer = Transfer {
+                from: self.vault_ata.to_account_info(),
+                to: self.admin_ata.to_account_info(),
+                authority: self.vault_account.to_account_info(),
+            };
+
+            let vault_bump = self.vault_account.vault_bump;
+            let project_key = self.project_account.key();
+            let seeds = &[
+                b"vault",
+                project_key.as_ref(),
+                &[vault_bump],
+            ];
+            let signer_seeds = &[&seeds[..]];
+
+
+            let cpi_context_to_admin_fee = CpiContext::new_with_signer(
+                self.token_program.to_account_info(),
+                accounts_to_admin_fee_transfer,
+                signer_seeds
+            );
+            transfer(cpi_context_to_admin_fee, fee_amount)?;
+        }
+
+
+        // 2. Transfer Payment to NGO Account
+        if payment_amount_to_ngo > 0 { // Only transfer payment if it's greater than zero
+            let accounts_to_ngo_payment_transfer = Transfer {
+                from: self.vault_ata.to_account_info(),
+                to: self.ngo_ata.to_account_info(),
+                authority: self.vault_account.to_account_info(),
+            };
+
+            let vault_bump = self.vault_account.vault_bump;
+            let project_key = self.project_account.key();
+            let seeds = &[
+                b"vault",
+                project_key.as_ref(),
+                &[vault_bump],
+            ];
+            let signer_seeds = &[&seeds[..]];
+
+            let cpi_context_to_ngo_payment = CpiContext::new_with_signer(
+                self.token_program.to_account_info(),
+                accounts_to_ngo_payment_transfer,
+                signer_seeds
+            );
+            transfer(cpi_context_to_ngo_payment, payment_amount_to_ngo)?;
+
+            emit!(PaymentEvent {
+                project_account_pubkey: self.project_account.key(),
+                ngo_account_pubkey: self.ngo.key(),
+                payment: "payed".to_string(),
+            })
+        }
+
+
+        Ok(())
+    }
+
+}
+
+================
+File: programs/milestone/src/instructions/process_project.rs
+================
+use anchor_lang::prelude::*;
+
+use crate::state::{
+    CompanyAccount, NgoAccount, ProjectAccount, ProjectCompletionDetails, ProjectStatus, Status,
+    TempTransactionAccount, TempTransactionAccountStatus,
+};
+
+ 
+
+
+
+#[event]
+pub struct  ProcessProjectEvent{
+    pub project_pubkey: Pubkey, // Pubkey of project it is linked to.
+    pub ngo_pubkey: Pubkey,
+    pub status: Status
+} 
+
+// fund manager role
+// after seeing the application of ngo , he either approves or rejects
+// from client side -->  projectName, ngoPubkey Accepted or Rejected
+
+// TO DO
+// if rejected -> update status project_account, tempTransactionAccount ,
+// if accepted -> createProjectCompletionDetails, update project_account, update NgoAccount, TempTransactionAccount.
+
+// accounts needed -> create project_completion_details account, project_account, ngo_account, tempTransactionAccount
+
+#[derive(Accounts)]
+#[instruction(project_name: String)]
+pub struct ProcessProject<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account(
+        has_one = signer,
+        seeds = [b"company", signer.key().as_ref()],
+        bump= company.company_bump
+    )]
+    pub company: Account<'info, CompanyAccount>,
+
+    #[account(
+        mut,
+        seeds = [b"project",project_account.company_pubkey.as_ref(),project_name.as_bytes() ],
+        bump = project_account.project_bump
+
+        )]
+    pub project_account: Account<'info, ProjectAccount>,
+
+    #[account( seeds=[b"ngo",ngo.ngo_signer.as_ref()], bump = ngo.ngo_bump )]
+    pub ngo: Account<'info, NgoAccount>,
+
+    #[account(init, payer = signer, seeds = [b"project_completion_details", project_account.key().as_ref(), ngo.key().as_ref()], space = ProjectCompletionDetails::INIT_SPACE, bump)]
+    pub project_completion_details: Account<'info, ProjectCompletionDetails>,
+
+    #[account( 
+        mut,
+        seeds= [b"temp_tx", project_account.key().as_ref(), ngo.key().as_ref()],
+        bump= temp_transaction_account.temp_bump
+    )]
+    pub temp_transaction_account: Account<'info, TempTransactionAccount>,
+
+    system_program: Program<'info, System>,
+}
+
+impl<'info> ProcessProject<'info> {
+    pub fn process_project(
+        &mut self,
+        status: Status,
+        merkel_root: Option<[u8; 32]>,
+        bumps: &ProcessProjectBumps,
+    ) -> Result<()> {
+        match status {
+            Status::Accepted => {
+                self.temp_transaction_account.status = TempTransactionAccountStatus::Accepted;
+
+                self.project_completion_details
+                    .set_inner(ProjectCompletionDetails {
+                        project_pubkey: self.project_account.key(),
+                        ngo_pubkey: self.ngo.key(),
+                        merkel_root: merkel_root.expect("Merkel root is required for accepted"),
+                        completion_bump: bumps.project_completion_details,
+                    });
+
+                self.project_account.status = ProjectStatus::Funded;
+            }
+            Status::Rejected => {
+                self.temp_transaction_account.status = TempTransactionAccountStatus::Rejected;
+            }
+        }
+
+        emit!(ProcessProjectEvent {
+            project_pubkey: self.project_account.key(),
+            ngo_pubkey: self.ngo.key(),
+            status: status
+        });
+
+        Ok(())
+    }
+}
+
+================
+File: programs/milestone/src/instructions/text
+================
+for emitting events.
+
+when project is created -> done
+
+when application for projected is done -> done
+
+when application is accepted or rejected -> done
+
+when payment is made -> done
+
+================
+File: programs/milestone/src/state/admin.rs
+================
+use anchor_lang::prelude::*;
+
+#[account]
+#[derive(InitSpace)]
+pub struct Admin {
+    pub admin_signer_pubkey: Pubkey,
+    pub max_projects: u32,
+    pub fee_basis_points: u16, // basis points 50 = 0.5
+    pub admin_bump: u8,
+    pub admin_ata: Pubkey,
+}
+
+impl Admin {
+    pub fn calculate_fee(&self, amount: u64) -> u64 {
+        (amount * self.fee_basis_points as u64) / 10_000
+    }
+}
+
+================
+File: programs/milestone/src/state/company.rs
+================
+use anchor_lang::prelude::*;
+
+// PDA Seed: [ "company", signerPubkey ]
+
+#[account]
+#[derive(InitSpace)] // Auto-calculates storage size
+pub struct CompanyAccount {
+    pub signer: Pubkey,
+    #[max_len(40)]
+    pub name: String, // Company name (max 54 chars)
+
+    #[max_len(24)]
+    pub business_reg_num: String, // Business registration number (max 24 chars)
+
+    pub company_bump: u8, // PDA bump seed
+    // pub max_projects: u32,   // Max allowed projects
+    pub total_projects: u32, // Current project count
+}
+
+================
+File: programs/milestone/src/state/mod.rs
+================
+pub mod admin;
+pub mod company;
+pub mod ngo;
+pub mod project;
+pub mod project_completion;
+pub mod status_enum;
+pub mod temp_transaction;
+pub mod vault;
+
+pub use admin::*;
+pub use company::*;
+pub use ngo::*;
+pub use project::*;
+pub use project_completion::*;
+pub use status_enum::*;
+pub use temp_transaction::*;
+pub use vault::*;
+
+================
+File: programs/milestone/src/state/ngo.rs
+================
+use anchor_lang::prelude::*;
+
+#[account]
+#[derive(InitSpace)]
+pub struct NgoAccount {
+    #[max_len(20)]
+    pub name: String, // Fixed-size NGO name (25 bytes)
+    pub ngo_signer: Pubkey,
+    pub completed_projects: u32, // Number of completed projects (4 bytes)
+    pub merkel_root: Option<[u8; 32]>, // Merkle root of all completed projects
+    pub ngo_bump: u8,            // PDA bump seed
+}
+
+================
+File: programs/milestone/src/state/project_completion.rs
+================
+use anchor_lang::prelude::*;
+
+#[account]
+pub struct ProjectCompletionDetails {
+    pub project_pubkey: Pubkey, // Pubkey of project it is linked to.
+    pub ngo_pubkey: Pubkey,     // Pubkey of ngo account completing it.
+    pub merkel_root: [u8; 32],  // root of the tree which has leves made up of all the transactions
+    pub completion_bump: u8,
+}
+
+impl Space for ProjectCompletionDetails {
+    const INIT_SPACE: usize = 8  // Anchor's discriminator (always 8 bytes)
+    + 32 // project_pubkey
+    + 32 // ngo_pubkey
+    + 32 // merkel_root
+    + 1; // bump
+}
+
+================
+File: programs/milestone/src/state/project.rs
+================
+use anchor_lang::prelude::*;
+
+#[account]
+#[derive(InitSpace)]
+pub struct ProjectAccount {
+    pub company_pubkey: Pubkey, // Company's public key
+    #[max_len(30)]
+    pub project_name: String,
+    pub requirements_hash: [u8; 32],  //Hash storying address to db
+    pub status: ProjectStatus,        // Project status
+    pub max_submissions_allowed: u16, // Maximum allowed submissions
+    pub total_submissions: u16,       // Current number of submissions
+    pub project_bump: u8,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, InitSpace, Copy)]
+pub enum ProjectStatus {
+    //Project got created
+    OpenForApplication,    // NGOs can apply for funding
+    Funded,                // Funding has been granted and closed
+    InProgress,            // Project is actively being worked on
+    Closed,                // Project is  closed
+    NotOpenForApplication, //
+}
+
+================
+File: programs/milestone/src/state/status_enum.rs
+================
+use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum Status {
+    Accepted,
+    Rejected,
+}
+
+================
+File: programs/milestone/src/state/temp_transaction.rs
+================
+use anchor_lang::prelude::*;
+
+/// Temporary account for tracking project-related transactions.
+#[account]
+pub struct TempTransactionAccount {
+    pub project_account_pubkey: Pubkey, // Project's public key (32 bytes)
+    pub ngo_signer_pubkey: Pubkey,
+    pub ngo_account_pubkey: Pubkey, // NGO's public key (32 bytes)
+    pub submitted_requirements_hash: [u8; 32], // Hash of submitted requirements (32 bytes)
+    pub status: TempTransactionAccountStatus, // Transaction status (1 byte)
+    pub temp_bump: u8,
+}
+
+/// Defines the fixed storage space for on-chain allocation.
+impl Space for TempTransactionAccount {
+    const INIT_SPACE: usize = 8  // Discriminator
+    + 32  // Project account
+    + 32  // NGO signer pubkey
+    + 32  // ngo account pubkey
+    + 32  // Requirements hash
+    + 1 // Status (enum, 1 byte)
+    + 1; // bump
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize, PartialEq, Clone, Debug)]
+pub enum TempTransactionAccountStatus {
+    Processing,
+    Accepted,
+    Rejected,
+}
+
+================
+File: programs/milestone/src/state/vault.rs
+================
+use anchor_lang::prelude::*;
+
+#[account]
+pub struct Vault {
+    pub project_key: Pubkey, // Stores the project identifier
+    pub vault_ata: Pubkey,   // The associated token account (ATA) for USDC
+    pub vault_bump: u8,      // PDA bump
+}
+
+impl Space for Vault {
+    const INIT_SPACE: usize = 8 + 32 + 32 + 1; // 8-byte discriminator + fields
+}
+
+================
+File: programs/milestone/src/errors.rs
+================
+use anchor_lang::error_code;
+
+#[error_code]
+
+pub enum ProjectError {
+    #[msg("max project limit reached")]
+    MaxProjectsReached,
+
+    #[msg("amount not specified")]
+    InvalidAmount,
+
+    #[msg("max ngo application reached")]
+    MaxApplicationReached,
+
+    #[msg("Cannot apply. Project closed")]
+    ProjectClosed,
+
+    #[msg("This ngo's appliaction is not accepted")]
+    ProjectNotAccepted,
+
+    #[msg("wrong project status cannot disburse funds")]
+    ProjectStatusWrong,
+
+    #[msg("Insufficient balance in vault to cover fee and payment")]
+    InsufficientVaultBalance,
+
+    #[msg("Project not closed")]
+    ProjectNotClosed,
+
+    #[msg("This status cannot be used")]
+    ProjectStatusNotAllowed,
+
+    #[msg("The status of project account should be NotOpenForApplication for changing the requirements")]
+    ProjectWrongStatus,
+
+    #[msg("Ngo application already accepted , cannot change reuirements now")]
+    NgoRequirementsNotAllowed,
+}
+
+================
+File: programs/milestone/src/lib.rs
+================
+use anchor_lang::prelude::*;
+
+mod instructions;
+
+mod errors;
+mod state;
+
+use instructions::*;
+use state::*;
+
+declare_id!("3ekfBBpPEzHCe3Z9DPE9wp7Hgx82LoCGMWS83ez6Ctnj");
+
+#[program]
+pub mod milestone {
+
+    use crate::state::Status;
+
+    use super::*;
+
+    pub fn init_admin(
+        ctx: Context<InitializeAdmin>,
+        max_projects: u32,
+        fee_basis_points: u16,
+    ) -> Result<()> {
+        ctx.accounts
+            .intialize_admin(max_projects, fee_basis_points, &ctx.bumps)?; //creating admin account
+        Ok(())
+    }
+
+    pub fn init_company(
+        ctx: Context<InitializeCompany>,
+        name: String,
+        business_reg_num: String,
+    ) -> Result<()> {
+        ctx.accounts
+            .intialize_company(name, business_reg_num, &ctx.bumps)?; // creating company account
+
+        Ok(())
+    }
+    // create project and depostit usdc
+    pub fn create_project(
+        ctx: Context<InitializeProject>,
+        project_name: String,
+        requirements_hash: [u8; 32],
+        max_submissions_allowed: u16,
+        amount: u64,
+    ) -> Result<()> {
+        ctx.accounts.verify_and_create_project(
+            project_name,
+            requirements_hash,
+            max_submissions_allowed,
+            &ctx.bumps,
+        )?;
+
+        ctx.accounts.deposit(amount, &ctx.bumps)?;
+
+        Ok(())
+    }
+
+    // initialise ngo account
+    pub fn init_ngo(ctx: Context<InitializeNgo>, name: String) -> Result<()> {
+        ctx.accounts.initialize_ngo(name, &ctx.bumps)?;
+        Ok(())
+    }
+
+    // apply for project
+    pub fn initiate_project(
+        ctx: Context<ApplyProject>,
+        project_name: String,
+        submitted_requirements_hash: [u8; 32],
+    ) -> Result<()> {
+        ctx.accounts
+            .apply_project(project_name, submitted_requirements_hash, &ctx.bumps)?;
+        Ok(())
+    }
+
+    pub fn process_project_funding(
+        ctx: Context<ProcessProject>,
+        status: Status,
+        merkel_root: Option<[u8; 32]>, // merkel root made up of all transactions involved
+    ) -> Result<()> {
+        ctx.accounts
+            .process_project(status, merkel_root, &ctx.bumps)?;
+
+        Ok(())
+    }
+
+    pub fn process_project_payment(
+        ctx: Context<ProcessPayment>,
+        _project_name: String,
+    ) -> Result<()> {
+        ctx.accounts.make_checks()?;
+        ctx.accounts.payment()?;
+
+        Ok(())
+    }
+
+    pub fn close_temp_account(ctx: Context<CloseAccountTemp>) -> Result<()> {
+        ctx.accounts.close_accounts()?;
+
+        Ok(())
+    }
+
+    pub fn edit_project_account(
+        ctx: Context<EditProject>,
+        status: Option<ProjectStatus>,
+        requirements_hash: Option<[u8; 32]>,
+        close: bool,
+        _project_name: String,
+    ) -> Result<()> {
+        ctx.accounts
+            .edit_project_account(status, requirements_hash, close)?;
+        Ok(())
+    }
+
+    pub fn edit_ngo_reuirements(
+        ctx: Context<EditNgoApplication>,
+        close: bool,
+        submitted_requirements_hash: Option<[u8; 32]>,
+    ) -> Result<()> {
+        ctx.accounts
+            .edit_ngo_reuirements(close, submitted_requirements_hash)?;
+        Ok(())
+    }
+}
+
+
+
+================================================================
+End of Codebase
+================================================================
