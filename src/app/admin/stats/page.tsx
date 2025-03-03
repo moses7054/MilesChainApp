@@ -6,6 +6,7 @@ import Link from "next/link";
 import { TransactionProvider } from "../../components/TransactionStatus";
 import WalletButton from "../../components/WalletButton";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import AdminCheck from "../components/AdminCheck";
 
 interface AdminStats {
   maxProjects: number;
@@ -176,30 +177,21 @@ const AdminStatsPage = () => {
           </div>
         </div>
 
-        {!connected ? (
+        {connected ? (
+          <>
+            {/* Admin Account Check */}
+            <AdminCheck />
+
+            {/* Stats Display */}
+            <AdminStatsDisplay />
+          </>
+        ) : (
           <div className="cyber-card p-8 text-center">
-            <p className="text-xl text-cyber-pink mb-4">Wallet Not Connected</p>
-            <p className="text-gray-400 mb-6">
+            <p className="text-xl mb-4">
               Please connect your wallet to view admin statistics
             </p>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <div className="cyber-card p-6">
-              <h2 className="text-xl text-cyber-neon mb-6">
-                Protocol Statistics
-              </h2>
-              <AdminStatsDisplay />
-            </div>
-
-            <div className="cyber-card p-6">
-              <h2 className="text-xl text-cyber-neon mb-4">
-                Activity Timeline
-              </h2>
-              <p className="text-gray-400">
-                This feature will display a timeline of recent protocol
-                activity.
-              </p>
+            <div className="flex justify-center">
+              <WalletButton />
             </div>
           </div>
         )}

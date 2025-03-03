@@ -11,6 +11,7 @@ import {
 import WalletButton from "../components/WalletButton";
 import * as anchor from "../utils/anchor";
 import TransactionConfirmationModal from "../components/TransactionConfirmationModal";
+import AdminCheck from "./components/AdminCheck";
 
 // Extract components from the default export
 const {
@@ -98,6 +99,7 @@ const AdminInitForm = () => {
       const feeBasisPoints = parseInt(formData.feeBasisPoints);
 
       // Set up the provider and program
+      // @ts-ignore - The walletAdapter may not exactly match the expected type
       const provider = anchor.getProvider(walletAdapter as any, connection);
       const program = anchor.getMilestoneProgram(provider);
 
@@ -275,6 +277,9 @@ const AdminPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-8">
+            {/* Admin Check Component */}
+            <AdminCheck />
+
             <div className="cyber-card p-6">
               <AdminInitForm />
             </div>
