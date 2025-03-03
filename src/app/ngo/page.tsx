@@ -142,9 +142,15 @@ const NgoInitForm: React.FC<NgoInitFormProps> = ({ ngoAccountState }) => {
       // Call transaction handler
       await handleTransaction(
         initializeNgo(),
-        "Initializing NGO account...",
-        "NGO account initialized successfully!",
-        "Failed to initialize NGO account"
+        ngoAccountState.exists
+          ? "Updating NGO account..."
+          : "Initializing NGO account...",
+        ngoAccountState.exists
+          ? "NGO account updated successfully!"
+          : "NGO account initialized successfully!",
+        ngoAccountState.exists
+          ? "Failed to update NGO account"
+          : "Failed to initialize NGO account"
       );
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -308,8 +314,8 @@ const NgoCheck: React.FC<{
         // Simulate API delay
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // For demo purposes, let's assume no NGO exists yet
-        const exists = false;
+        // For demo purposes, let's assume NGO exists
+        const exists = true;
 
         setNgoExists(exists);
 
