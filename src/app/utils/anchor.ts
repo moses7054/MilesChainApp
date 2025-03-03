@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
 import idl from "../../_idl/milestone.json";
 
@@ -17,7 +17,7 @@ export const getProvider = (wallet: Wallet, connection: Connection) => {
 
 // Get the Milestone Program
 export const getMilestoneProgram = (provider: AnchorProvider) => {
-  // @ts-ignore: IDL type incompatibility
+  // @ts-expect-error: IDL type incompatibility
   return new Program(idl, PROGRAM_ID, provider);
 };
 
@@ -56,4 +56,61 @@ export const initializeAdmin = async (
     console.error("Error initializing admin:", error);
     throw error;
   }
+};
+
+// Initialize company account
+export const initializeCompany = async (
+  program: Program<any>,
+  name: string,
+  businessRegNum: string
+) => {
+  try {
+    // Derive the company PDA
+    const provider = program.provider as AnchorProvider;
+    const userPublicKey = provider.publicKey;
+
+    if (!userPublicKey) {
+      throw new Error("Provider has no public key");
+    }
+
+    const [companyPDA] = await PublicKey.findProgramAddress(
+      [Buffer.from("company"), userPublicKey.toBuffer()],
+      program.programId
+    );
+
+    // Call the program method to initialize the company
+    const tx = await program.methods
+      .initCompany(name, businessRegNum)
+      .accounts({
+        signer: userPublicKey,
+        company: companyPDA,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+
+    return tx;
+  } catch (error) {
+    console.error("Error initializing company:", error);
+    throw error;
+  }
+};
+
+// Get Anchor Provider without wallet adapter (for read-only operations)
+export const getAnchorProvider = (connection: Connection) => {
+  // Create a read-only provider
+  const provider = new AnchorProvider(
+    connection,
+    // Use a dummy wallet that can't sign
+    {
+      publicKey: PublicKey.default,
+      signTransaction: async () => {
+        throw new Error("Cannot sign");
+      },
+      signAllTransactions: async () => {
+        throw new Error("Cannot sign");
+      },
+    },
+    AnchorProvider.defaultOptions()
+  );
+  return provider;
 };
