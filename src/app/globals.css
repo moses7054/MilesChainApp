@@ -1,24 +1,183 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Animations */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px #8a2be2;
+  }
+  50% {
+    box-shadow: 0 0 20px #8a2be2, 0 0 30px #ff00ff;
+  }
+  100% {
+    box-shadow: 0 0 5px #8a2be2;
   }
 }
 
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Components */
+.cyber-button {
+  background-color: rgba(138, 43, 226, 0.1);
+  color: #ff00ff;
+  border: 1px solid #8a2be2;
+  padding: 1rem 2rem;
+  border-radius: 2px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.cyber-button:hover {
+  background-color: rgba(138, 43, 226, 0.2);
+  color: white;
+  animation: glow 1.5s infinite;
+  transform: translateY(-2px);
+}
+
+.cyber-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 0, 255, 0.4),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.cyber-button:hover::after {
+  left: 100%;
+}
+
+.cyber-card {
+  background-color: rgba(26, 26, 26, 0.6);
+  border: 1px solid rgba(138, 43, 226, 0.3);
+  padding: 1.5rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ff00ff, transparent);
+}
+
+.cyber-card:hover {
+  border-color: #ff00ff;
+  animation: glow 2s infinite;
+  transform: translateY(-4px);
+}
+
+.cyber-input {
+  background-color: rgba(26, 26, 26, 0.8);
+  border: 1px solid #8a2be2;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
+  transition: all 0.3s;
+  backdrop-filter: blur(4px);
+}
+
+.cyber-input:focus {
+  animation: glow 2s infinite;
+  outline: none;
+  background-color: rgba(26, 26, 26, 0.9);
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(to bottom, #000000, #1a0033, #4b0082);
+  color: white;
+  font-family: var(--font-cyber), sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Add smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom selection color */
+::selection {
+  background: rgba(255, 0, 255, 0.3);
+  color: #fff;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff00ff;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff00cc;
+}
+
+/* SVG Styling */
+.svg-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.svg-path {
+  stroke-dasharray: 10;
+  stroke-dashoffset: 10;
+  animation: dash 20s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 1000;
+  }
 }
