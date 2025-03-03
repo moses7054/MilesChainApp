@@ -47,6 +47,37 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isLoadingCompanyData, setIsLoadingCompanyData] = useState(false);
+
+  // Fetch company data when the component mounts if the company exists
+  useEffect(() => {
+    const fetchCompanyDetails = async () => {
+      if (companyAccountState.exists && wallet.publicKey) {
+        try {
+          setIsLoadingCompanyData(true);
+          // This is a placeholder - you'll need to implement a function to fetch the full company data
+          // including name and business registration number
+          console.log(
+            "Fetching company details for:",
+            wallet.publicKey.toString()
+          );
+
+          // For now, we'll just set some placeholder data
+          // In a real implementation, you would fetch this from the blockchain
+          setFormData({
+            name: "Your Company Name", // Replace with actual fetched data
+            businessRegNum: "Your Business Reg Number", // Replace with actual fetched data
+          });
+        } catch (error) {
+          console.error("Error fetching company details:", error);
+        } finally {
+          setIsLoadingCompanyData(false);
+        }
+      }
+    };
+
+    fetchCompanyDetails();
+  }, [companyAccountState.exists, wallet.publicKey, connection]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -178,7 +209,11 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
   return (
     <div className="max-w-md mx-auto">
       <CyberForm onSubmit={handleSubmit}>
-        <CyberFormSection title="Company Registration">
+        <CyberFormSection
+          title={
+            companyAccountState.exists ? "Edit Company" : "Company Registration"
+          }
+        >
           {companyAccountState.exists ? (
             <p className="text-sm text-gray-400 mb-4">
               Update your company information below.
@@ -206,33 +241,42 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
             </div>
           )}
 
-          <CyberInput
-            label="Company Name"
-            name="name"
-            id="name"
-            type="text"
-            inputSize="md"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter your company name (max 40 chars)"
-            error={errors.name}
-            required
-            maxLength={40}
-          />
+          {isLoadingCompanyData ? (
+            <div className="flex justify-center items-center p-4">
+              <LoadingSpinner />
+              <span className="ml-2">Loading company data...</span>
+            </div>
+          ) : (
+            <>
+              <CyberInput
+                label="Company Name"
+                name="name"
+                id="name"
+                type="text"
+                inputSize="md"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter your company name (max 40 chars)"
+                error={errors.name}
+                required
+                maxLength={40}
+              />
 
-          <CyberInput
-            label="Business Registration Number"
-            name="businessRegNum"
-            id="businessRegNum"
-            type="text"
-            inputSize="md"
-            value={formData.businessRegNum}
-            onChange={handleChange}
-            placeholder="Enter your business registration number (max 24 chars)"
-            error={errors.businessRegNum}
-            required
-            maxLength={24}
-          />
+              <CyberInput
+                label="Business Registration Number"
+                name="businessRegNum"
+                id="businessRegNum"
+                type="text"
+                inputSize="md"
+                value={formData.businessRegNum}
+                onChange={handleChange}
+                placeholder="Enter your business registration number (max 24 chars)"
+                error={errors.businessRegNum}
+                required
+                maxLength={24}
+              />
+            </>
+          )}
         </CyberFormSection>
 
         {errors.submit && (
@@ -241,9 +285,10 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
 
         <CyberSubmit
           value={
-            companyAccountState.exists ? "Update Company" : "Register Company"
+            companyAccountState.exists ? "Edit Company" : "Register Company"
           }
-          isLoading={isLoading}
+          isLoading={isLoading || isLoadingCompanyData}
+          disabled={isLoadingCompanyData}
         />
       </CyberForm>
 
@@ -301,8 +346,9 @@ const CompanyPage = () => {
               Company Dashboard
             </h1>
             <p className="text-gray-400">
-              Register your company and create projects on the Milestone
-              Protocol
+              {companyAccountState.exists
+                ? "Manage your company and create projects on the Milestone Protocol"
+                : "Register your company and create projects on the Milestone Protocol"}
             </p>
           </div>
 
@@ -357,10 +403,13 @@ const CompanyPage = () => {
               onError={handleCompanyCheckError}
             />
 
-            {/* Company Init Form */}
-            <div className="cyber-card p-6">
-              <CompanyInitForm companyAccountState={companyAccountState} />
-            </div>
+            {/* Only show company registration/edit form if not registered or if editing */}
+            {(!companyAccountState.exists ||
+              companyAccountState.isCompanyWallet) && (
+              <div className="cyber-card p-6">
+                <CompanyInitForm companyAccountState={companyAccountState} />
+              </div>
+            )}
 
             {/* Only show company actions if the company exists */}
             {companyAccountState.exists && (
@@ -368,24 +417,37 @@ const CompanyPage = () => {
                 <h2 className="text-xl text-cyber-neon mb-4">
                   Company Actions
                 </h2>
-                <ul className="space-y-2">
-                  <li>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="cyber-card-inner p-4">
+                    <h3 className="text-lg text-cyber-purple mb-2">
+                      Create Project
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Create a new project and fund it with USDC
+                    </p>
                     <Link
-                      href="/company/projects"
-                      className="text-cyber-purple hover:text-cyber-pink transition-colors"
+                      href="/company/projects/create"
+                      className="cyber-button-primary text-sm px-4 py-2 inline-block"
                     >
                       Create New Project
                     </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/company/projects/manage"
-                      className="text-cyber-purple hover:text-cyber-pink transition-colors"
-                    >
+                  </div>
+
+                  <div className="cyber-card-inner p-4">
+                    <h3 className="text-lg text-cyber-purple mb-2">
                       Manage Projects
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      View and manage your existing projects
+                    </p>
+                    <Link
+                      href="/company/projects"
+                      className="cyber-button-secondary text-sm px-4 py-2 inline-block"
+                    >
+                      View Projects
                     </Link>
-                  </li>
-                </ul>
+                  </div>
+                </div>
               </div>
             )}
           </div>
