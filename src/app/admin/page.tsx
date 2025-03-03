@@ -249,6 +249,25 @@ const AdminInitForm = () => {
 // Main admin page component
 const AdminPage = () => {
   const { connected } = useWallet();
+  const [adminAccountState, setAdminAccountState] = useState<{
+    exists: boolean;
+    isAdminWallet: boolean;
+  }>({
+    exists: false,
+    isAdminWallet: false,
+  });
+
+  const handleAdminAccountState = (exists: boolean, isAdminWallet: boolean) => {
+    setAdminAccountState({ exists, isAdminWallet });
+  };
+
+  // Determine if we should show the admin form
+  // Show it if either:
+  // 1. Admin account doesn't exist (so someone can create it)
+  // 2. Admin account exists AND connected wallet has admin privileges
+  const showAdminInitForm =
+    !adminAccountState.exists ||
+    (adminAccountState.exists && adminAccountState.isAdminWallet);
 
   return (
     <TransactionProvider>
@@ -278,32 +297,40 @@ const AdminPage = () => {
         ) : (
           <div className="grid grid-cols-1 gap-8">
             {/* Admin Check Component */}
-            <AdminCheck />
+            <AdminCheck onAdminStateChange={handleAdminAccountState} />
 
-            <div className="cyber-card p-6">
-              <AdminInitForm />
-            </div>
+            {showAdminInitForm && (
+              <div className="cyber-card p-6">
+                <AdminInitForm />
+              </div>
+            )}
 
             <div className="cyber-card p-6">
               <h2 className="text-xl text-cyber-neon mb-4">Admin Actions</h2>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/admin/stats"
-                    className="text-cyber-purple hover:text-cyber-pink transition-colors"
-                  >
-                    View Statistics
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/admin/projects"
-                    className="text-cyber-purple hover:text-cyber-pink transition-colors"
-                  >
-                    Manage Projects
-                  </Link>
-                </li>
-              </ul>
+              {adminAccountState.isAdminWallet ? (
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      href="/admin/stats"
+                      className="text-cyber-purple hover:text-cyber-pink transition-colors"
+                    >
+                      View Statistics
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/admin/projects"
+                      className="text-cyber-purple hover:text-cyber-pink transition-colors"
+                    >
+                      Manage Projects
+                    </Link>
+                  </li>
+                </ul>
+              ) : (
+                <p className="text-gray-400">
+                  Connect with an admin wallet to access admin actions.
+                </p>
+              )}
             </div>
           </div>
         )}
