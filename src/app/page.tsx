@@ -1,4 +1,5 @@
 import WalletButton from "./components/WalletButton";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -97,25 +98,31 @@ export default function Home() {
               <h3 className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 text-cyber-pink">
                 Admin Portal
               </h3>
-              <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
-                Enter →
-              </button>
+              <Link href="/admin" className="block">
+                <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
+                  Enter →
+                </button>
+              </Link>
             </div>
             <div className="cyber-card hover:scale-105 transition-transform p-3 sm:p-4 md:p-5">
               <h3 className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 text-cyber-pink">
                 NGO Portal
               </h3>
-              <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
-                Enter →
-              </button>
+              <Link href="/ngo" className="block">
+                <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
+                  Enter →
+                </button>
+              </Link>
             </div>
             <div className="cyber-card hover:scale-105 transition-transform p-3 sm:p-4 md:p-5">
               <h3 className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 text-cyber-pink">
                 Company Portal
               </h3>
-              <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
-                Enter →
-              </button>
+              <Link href="/company" className="block">
+                <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
+                  Enter →
+                </button>
+              </Link>
             </div>
           </div>
         </div>

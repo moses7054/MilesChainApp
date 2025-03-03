@@ -48,19 +48,19 @@
 
 ## 👨‍💼 Admin Dashboard (/pages/admin/index.tsx)
 
-- [⏳] Build admin initialization form:
+- [x] Build admin initialization form:
   ```typescript
   interface AdminInit {
     maxProjects: number; // u32
     feeBasisPoints: number; // u16 (50 = 0.5%)
   }
   ```
-- [ ] Add transaction confirmation modal
-- [ ] Create admin stats display
+- [x] Add transaction confirmation modal
+- [x] Create admin stats display
 
 ## 🏛️ NGO Dashboard (/pages/ngo/index.tsx)
 
-- [ ] Build NGO registration form:
+- [⏳] Build NGO registration form:
   ```typescript
   interface NgoInit {
     name: string; // max 20 chars
@@ -108,3 +108,7 @@
 ✅ = Completed | ⏳ = In Progress | ❌ = Blocked
 
 To mark a task as complete, replace "[ ]" with "[x]"
+
+## ⚠️ Notes and Cautions
+
+- **ProjectStatus Enum Serialization Issue**: When interacting with the Anchor program on devnet, be aware that some instruction structs don't properly declare the ProjectStatus enum in their #[instruction()] attributes. This mismatch may cause serialization/deserialization errors when calling instructions that use ProjectStatus as a parameter (especially edit_project_account). Handle with care in frontend interactions.
