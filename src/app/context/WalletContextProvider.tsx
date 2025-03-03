@@ -28,7 +28,7 @@ export const WalletContextProvider: FC<WalletContextProviderProps> = ({
 
   // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking
   // so only the wallets you configure here will be compiled into your application
-  const wallets = useMemo(() => [new PhantomWalletAdapter()], [network]);
+  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>

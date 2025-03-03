@@ -232,14 +232,14 @@ const AdminInitForm: React.FC<AdminInitFormProps> = ({ adminAccountState }) => {
                 You are about to become the administrator of the Milestone
                 Protocol.
               </p>
-              <p className="text-sm text-gray-400">
+              <div className="text-sm text-gray-400">
                 As admin, your wallet will have privileged access to:
                 <ul className="list-disc pl-5 mt-1 space-y-1">
                   <li>Receive platform fees from completed milestones</li>
                   <li>Set global platform parameters</li>
                   <li>Manage milestones and participants</li>
                 </ul>
-              </p>
+              </div>
             </div>
           )}
 

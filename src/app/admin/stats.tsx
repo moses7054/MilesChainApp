@@ -6,7 +6,6 @@ import Link from "next/link";
 import { TransactionProvider } from "../components/TransactionStatus";
 import WalletButton from "../components/WalletButton";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import * as anchor from "../utils/anchor";
 
 interface AdminStats {
   maxProjects: number;

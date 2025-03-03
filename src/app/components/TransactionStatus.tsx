@@ -292,9 +292,12 @@ export const useTransactionHandler = () => {
   };
 };
 
-export default {
+// Create a named variable for the default export
+const TransactionStatusComponents = {
   TransactionStatusIndicator,
   TransactionProvider,
   useTransaction,
   useTransactionHandler,
 };
+
+export default TransactionStatusComponents;

@@ -1,9 +1,9 @@
 import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
-import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
+import { AnchorProvider, Program, Wallet, Idl } from "@project-serum/anchor";
 import idl from "../../_idl/milestone.json";
 
 // Program ID from the IDL
-const PROGRAM_ID = new PublicKey(idl.address);
+export const PROGRAM_ID = new PublicKey(idl.address);
 
 // Get the Anchor Provider
 export const getProvider = (wallet: Wallet, connection: Connection) => {
@@ -22,7 +22,7 @@ export const getMilestoneProgram = (provider: AnchorProvider) => {
 };
 
 // Find PDA for admin account
-export const findAdminPDA = async (program: Program<any>) => {
+export const findAdminPDA = async (program: Program<Idl>) => {
   const [adminPDA] = await PublicKey.findProgramAddress(
     [Buffer.from("admin")],
     program.programId
@@ -32,7 +32,7 @@ export const findAdminPDA = async (program: Program<any>) => {
 
 // Initialize admin account
 export const initializeAdmin = async (
-  program: Program<any>,
+  program: Program<Idl>,
   maxProjects: number,
   feeBasisPoints: number
 ) => {
@@ -60,7 +60,7 @@ export const initializeAdmin = async (
 
 // Initialize company account
 export const initializeCompany = async (
-  program: Program<any>,
+  program: Program<Idl>,
   name: string,
   businessRegNum: string
 ) => {

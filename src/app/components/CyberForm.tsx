@@ -327,13 +327,15 @@ export const CyberSubmit: React.FC<CyberSubmitProps> = ({
   );
 };
 
-export default {
+// Create a named variable for the default export
+const CyberFormComponents = {
   Form: CyberForm,
   Input: CyberInput,
   Textarea: CyberTextarea,
   Select: CyberSelect,
   Checkbox: CyberCheckbox,
-  Label: CyberLabel,
-  Section: CyberFormSection,
   Submit: CyberSubmit,
+  Section: CyberFormSection,
 };
+
+export default CyberFormComponents;

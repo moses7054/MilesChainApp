@@ -173,7 +173,7 @@ export const HackerSpinner: React.FC<
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [characters]);
 
   const spinner = (
     <div
@@ -195,8 +195,11 @@ export const HackerSpinner: React.FC<
   return spinner;
 };
 
-export default {
+// Create a named variable for the default export
+const LoadingSpinnerComponents = {
   LoadingSpinner,
   MatrixSpinner,
   HackerSpinner,
 };
+
+export default LoadingSpinnerComponents;
