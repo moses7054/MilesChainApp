@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom breakpoint */
+@layer utilities {
+  @variants responsive {
+    .xs\:flex-row {
+      flex-direction: row;
+    }
+    .xs\:mt-0 {
+      margin-top: 0;
+    }
+    .xs\:ml-2 {
+      margin-left: 0.5rem;
+    }
+    .xs\:p-2 {
+      padding: 0.5rem;
+    }
+    .xs\:max-w-none {
+      max-width: none;
+    }
+    .xs\:text-sm {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+    .xs\:py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .xs\:px-3 {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+  }
+}
+
 /* Animations */
 @keyframes glow {
   0% {
@@ -107,6 +140,12 @@
   transform: translateY(-4px);
 }
 
+/* Compact card for wallet button */
+.cyber-card.flex {
+  padding: 0;
+  border-width: 1px;
+}
+
 .cyber-input {
   background-color: rgba(26, 26, 26, 0.8);
   border: 1px solid #8a2be2;
@@ -194,14 +233,89 @@ html {
   text-align: center !important;
   backdrop-filter: blur(4px) !important;
   font-family: var(--font-cyber), sans-serif !important;
-  font-size: 0.875rem !important;
-  padding: 0.5rem 1rem !important;
+  font-size: 0.75rem !important;
+  padding: 0 0.5rem !important;
+  line-height: 1 !important;
+  height: 16px !important;
+}
+
+/* Mini wallet button for mobile */
+.mini-wallet-btn {
+  min-width: auto !important;
+  height: 16px !important;
+  line-height: 1 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0.25rem !important;
+  padding-right: 0.25rem !important;
+}
+
+.mini-wallet-btn .wallet-adapter-button-start-icon {
+  margin-right: 2px !important;
+  width: 10px !important;
+  height: 10px !important;
+}
+
+@media (max-width: 480px) {
+  .mini-wallet-btn .wallet-adapter-button-start-icon {
+    margin-right: 1px !important;
+    width: 8px !important;
+    height: 8px !important;
+  }
+
+  .mini-wallet-btn .wallet-adapter-button-end-icon {
+    width: 8px !important;
+    height: 8px !important;
+    margin-left: 1px !important;
+  }
+}
+
+@media (min-width: 480px) {
+  .wallet-adapter-button {
+    font-size: 0.75rem !important;
+    padding: 0 0.5rem !important;
+    height: 18px !important;
+  }
+
+  .mini-wallet-btn {
+    height: 18px !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .mini-wallet-btn .wallet-adapter-button-start-icon {
+    width: 10px !important;
+    height: 10px !important;
+  }
 }
 
 @media (min-width: 640px) {
   .wallet-adapter-button {
-    font-size: 1rem !important;
-    padding: 0.75rem 1.5rem !important;
+    font-size: 0.75rem !important;
+    padding: 0 0.75rem !important;
+    height: 20px !important;
+  }
+
+  .mini-wallet-btn {
+    height: 20px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .wallet-adapter-button {
+    font-size: 0.875rem !important;
+    padding: 0.25rem 1rem !important;
+    height: 28px !important;
+    line-height: 1.2 !important;
+  }
+
+  .mini-wallet-btn {
+    height: 28px !important;
+  }
+
+  .mini-wallet-btn .wallet-adapter-button-start-icon {
+    width: 14px !important;
+    height: 14px !important;
   }
 }
 
@@ -225,12 +339,24 @@ html {
   backdrop-filter: blur(10px) !important;
   border: 1px solid rgba(138, 43, 226, 0.3) !important;
   max-width: 90% !important;
-  width: 400px !important;
+  width: 320px !important;
+}
+
+@media (min-width: 640px) {
+  .wallet-adapter-modal-wrapper {
+    width: 400px !important;
+  }
 }
 
 .wallet-adapter-modal-title {
   color: #ff00ff !important;
-  font-size: 1.25rem !important;
+  font-size: 1rem !important;
+}
+
+@media (min-width: 640px) {
+  .wallet-adapter-modal-title {
+    font-size: 1.25rem !important;
+  }
 }
 
 .wallet-adapter-modal-button-close {

@@ -25,6 +25,9 @@ module.exports = {
       animation: {
         "pulse-slow": "pulse 3s infinite",
       },
+      screens: {
+        xs: "480px",
+      },
     },
   },
   plugins: [],

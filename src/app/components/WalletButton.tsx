@@ -23,25 +23,25 @@ export const WalletButton: FC = () => {
   }, [disconnect]);
 
   return (
-    <div className="relative">
+    <div className="relative scale-[0.65] xs:scale-75 sm:scale-90 md:scale-100 origin-right">
       {connected ? (
-        <div className="cyber-card flex flex-col sm:flex-row items-center p-2 sm:p-3">
+        <div className="cyber-card flex flex-row items-center p-0 xs:p-0.5 sm:p-1 max-w-[180px] xs:max-w-[200px] sm:max-w-none">
           <div className="flex items-center">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <span className="text-cyber-pink text-sm sm:text-base">
+            <div className="w-1.5 h-1.5 xs:w-2 sm:w-3 xs:h-2 sm:h-3 bg-green-500 rounded-full mr-0.5 xs:mr-1 sm:mr-2 animate-pulse"></div>
+            <span className="text-cyber-pink text-[10px] xs:text-xs sm:text-sm md:text-base truncate">
               {address}
             </span>
           </div>
           <button
             onClick={handleDisconnect}
-            className="cyber-button text-xs sm:text-sm py-1 px-2 sm:px-3 mt-2 sm:mt-0 sm:ml-3"
+            className="cyber-button text-[10px] xs:text-xs sm:text-sm py-0 xs:py-0.5 px-0.5 xs:px-1 ml-0.5 xs:ml-1 sm:ml-2 whitespace-nowrap min-w-[12px] h-[16px] xs:h-[18px] sm:h-[20px] flex items-center justify-center"
           >
-            Disconnect
+            X
           </button>
         </div>
       ) : (
         <div className="cyber-button-wrapper">
-          <WalletMultiButton className="cyber-button !bg-transparent !py-2 !px-3 sm:!py-3 sm:!px-4 text-sm sm:text-base" />
+          <WalletMultiButton className="cyber-button bg-transparent py-0 xs:py-0 sm:py-0 px-0.5 xs:px-1 sm:px-2 text-[10px] xs:text-xs sm:text-sm md:text-base whitespace-nowrap mini-wallet-btn" />
         </div>
       )}
     </div>
