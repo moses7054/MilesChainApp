@@ -42,13 +42,13 @@
 ## 🧱 Core Components
 
 - [x] Create WalletButton component
-- [⏳] Build TransactionStatus component
+- [x] Build TransactionStatus component
 - [x] Design CyberForm component for inputs
-- [ ] Create LoadingSpinner with purple animation
+- [x] Create LoadingSpinner with purple animation
 
 ## 👨‍💼 Admin Dashboard (/pages/admin/index.tsx)
 
-- [ ] Build admin initialization form:
+- [⏳] Build admin initialization form:
   ```typescript
   interface AdminInit {
     maxProjects: number; // u32
