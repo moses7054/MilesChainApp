@@ -177,8 +177,8 @@ const NgoInitForm: React.FC<NgoInitFormProps> = ({ ngoAccountState }) => {
   ];
 
   const confirmationMessage = ngoAccountState.exists
-    ? "Please review the updated NGO information before confirming."
-    : "You are about to initialize an NGO account. This wallet will be linked to the NGO and will be able to apply for projects.";
+    ? "Please review the updated NGO parameters before confirming."
+    : "You are about to initialize an NGO account. This wallet will be linked to the NGO and will be able to apply for milestones.";
 
   return (
     <div className="max-w-md mx-auto">
@@ -199,15 +199,15 @@ const NgoInitForm: React.FC<NgoInitFormProps> = ({ ngoAccountState }) => {
                 <span className="text-cyber-pink font-medium">
                   No NGO account found.
                 </span>{" "}
-                Register your NGO to start applying for projects on the
+                Register your NGO to start applying for milestones on the
                 Milestone Protocol.
               </p>
               <p className="text-sm text-gray-400">
-                As a registered NGO, you&apos;ll be able to:
+                As an NGO, you can:
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>Apply for available projects</li>
-                  <li>Submit project requirements</li>
-                  <li>Receive funding for completed projects</li>
+                  <li>Apply for available milestones</li>
+                  <li>Submit milestone requirements</li>
+                  <li>Receive funding for completed milestones</li>
                 </ul>
               </p>
             </div>
@@ -255,8 +255,8 @@ const NgoInitForm: React.FC<NgoInitFormProps> = ({ ngoAccountState }) => {
         onConfirm={handleConfirmTransaction}
         title={
           ngoAccountState.exists
-            ? "Confirm NGO Update"
-            : "Confirm NGO Registration"
+            ? "Manage your NGO and apply for milestones on the Milestone Protocol"
+            : "Register your NGO and apply for milestones on the Milestone Protocol"
         }
         message={confirmationMessage}
         confirmButtonText={ngoAccountState.exists ? "Update" : "Register"}
@@ -449,8 +449,8 @@ const NgoPage = () => {
             </h1>
             <p className="text-gray-400">
               {ngoAccountState.exists
-                ? "Manage your NGO and apply for projects on the Milestone Protocol"
-                : "Register your NGO and apply for projects on the Milestone Protocol"}
+                ? "Manage your NGO and apply for milestones on the Milestone Protocol"
+                : "Register your NGO and apply for milestones on the Milestone Protocol"}
             </p>
           </div>
 
@@ -519,16 +519,16 @@ const NgoPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="cyber-card-inner p-4">
                     <h3 className="text-lg text-cyber-purple mb-2">
-                      Available Projects
+                      Available Milestones
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      Browse and apply for available projects
+                    <p className="text-xs md:text-sm mt-1 mb-3 text-gray-400">
+                      Browse and apply for available milestones
                     </p>
                     <Link
                       href="/ngo/projects"
-                      className="cyber-button-primary text-sm px-4 py-2 inline-block"
+                      className="cyber-button w-full text-xs sm:text-sm py-1 sm:py-2"
                     >
-                      Browse Projects
+                      Browse Milestones
                     </Link>
                   </div>
 
@@ -536,8 +536,8 @@ const NgoPage = () => {
                     <h3 className="text-lg text-cyber-purple mb-2">
                       My Applications
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      View your project applications and their status
+                    <p className="text-xs md:text-sm mt-1 mb-3 text-gray-400">
+                      View your milestone applications and their status
                     </p>
                     <Link
                       href="/ngo/applications"

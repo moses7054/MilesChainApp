@@ -13,7 +13,7 @@ module.exports = {
         "cyber-deep-purple": "#4B0082",
       },
       boxShadow: {
-        neon: "0 0 5px #8A2BE2, 0 0 20px #8A2BE2",
+        neon: "0 0 3px #8A2BE2, 0 0 8px #8A2BE2",
       },
       fontFamily: {
         cyber: ["var(--font-cyber)"],

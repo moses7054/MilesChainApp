@@ -203,8 +203,8 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
   ];
 
   const confirmationMessage = companyAccountState.exists
-    ? "Please review the updated company information before confirming."
-    : "You are about to initialize a company account. This wallet will be linked to the company and will be able to create projects.";
+    ? "Please review the updated company parameters before confirming."
+    : "You are about to initialize a company account. This wallet will be linked to the company and will be able to create milestones.";
 
   return (
     <div className="max-w-md mx-auto">
@@ -227,15 +227,15 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
                 <span className="text-cyber-pink font-medium">
                   No company account found.
                 </span>{" "}
-                Register your company to start creating projects on the
+                Register your company to start creating milestones on the
                 Milestone Protocol.
               </p>
               <p className="text-sm text-gray-400">
-                As a registered company, you&apos;ll be able to:
+                As a company, you can:
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>Create new projects</li>
-                  <li>Fund NGOs to complete your projects</li>
-                  <li>Track project completion status</li>
+                  <li>Create new milestones</li>
+                  <li>Fund NGOs to complete your milestones</li>
+                  <li>Track milestone completion status</li>
                 </ul>
               </p>
             </div>
@@ -299,8 +299,8 @@ const CompanyInitForm: React.FC<CompanyInitFormProps> = ({
         onConfirm={handleConfirmTransaction}
         title={
           companyAccountState.exists
-            ? "Confirm Company Update"
-            : "Confirm Company Registration"
+            ? "Manage your company and create milestones on the Milestone Protocol"
+            : "Register your company and create milestones on the Milestone Protocol"
         }
         message={confirmationMessage}
         confirmButtonText={companyAccountState.exists ? "Update" : "Register"}
@@ -347,8 +347,8 @@ const CompanyPage = () => {
             </h1>
             <p className="text-gray-400">
               {companyAccountState.exists
-                ? "Manage your company and create projects on the Milestone Protocol"
-                : "Register your company and create projects on the Milestone Protocol"}
+                ? "Manage your company and create milestones on the Milestone Protocol"
+                : "Register your company and create milestones on the Milestone Protocol"}
             </p>
           </div>
 
@@ -420,31 +420,31 @@ const CompanyPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="cyber-card-inner p-4">
                     <h3 className="text-lg text-cyber-purple mb-2">
-                      Create Project
+                      Create Milestone
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      Create a new project and fund it with USDC
+                    <p className="text-xs md:text-sm mt-1 mb-3 text-gray-400">
+                      Create a new milestone and fund it with USDC
                     </p>
                     <Link
                       href="/company/projects/create"
-                      className="cyber-button-primary text-sm px-4 py-2 inline-block"
+                      className="cyber-button w-full text-xs sm:text-sm py-1 sm:py-2"
                     >
-                      Create New Project
+                      Create New Milestone
                     </Link>
                   </div>
 
                   <div className="cyber-card-inner p-4">
                     <h3 className="text-lg text-cyber-purple mb-2">
-                      Manage Projects
+                      Manage Milestones
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      View and manage your existing projects
+                    <p className="text-xs md:text-sm mt-1 mb-3 text-gray-400">
+                      View and manage your existing milestones
                     </p>
                     <Link
                       href="/company/projects"
-                      className="cyber-button-secondary text-sm px-4 py-2 inline-block"
+                      className="cyber-button w-full text-xs sm:text-sm py-1 sm:py-2"
                     >
-                      View Projects
+                      View Milestones
                     </Link>
                   </div>
                 </div>

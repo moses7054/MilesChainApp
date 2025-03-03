@@ -38,13 +38,13 @@
 /* Animations */
 @keyframes glow {
   0% {
-    box-shadow: 0 0 5px #8a2be2;
+    box-shadow: 0 0 2px #8a2be2;
   }
   50% {
-    box-shadow: 0 0 20px #8a2be2, 0 0 30px #ff00ff;
+    box-shadow: 0 0 6px #8a2be2, 0 0 10px rgba(255, 0, 255, 0.5);
   }
   100% {
-    box-shadow: 0 0 5px #8a2be2;
+    box-shadow: 0 0 2px #8a2be2;
   }
 }
 
@@ -89,28 +89,30 @@
 .cyber-button:hover {
   background-color: rgba(138, 43, 226, 0.2);
   color: white;
-  animation: glow 1.5s infinite;
-  transform: translateY(-2px);
+  animation: glow 2s infinite;
+  transform: translateY(-1px);
 }
 
 .cyber-button::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+  top: 35%;
+  left: 0%;
+  width: 20%;
+  height: 30%;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 0, 255, 0.4),
+    rgba(255, 0, 255, 0.15),
     transparent
   );
-  transition: 0.5s;
+  transition: 0.8s;
+  opacity: 0;
 }
 
 .cyber-button:hover::after {
-  left: 100%;
+  left: 80%;
+  opacity: 1;
 }
 
 .cyber-card {
@@ -136,8 +138,8 @@
 
 .cyber-card:hover {
   border-color: #ff00ff;
-  animation: glow 2s infinite;
-  transform: translateY(-4px);
+  animation: glow 3s infinite;
+  transform: translateY(-2px);
 }
 
 /* Compact card for wallet button */
@@ -157,7 +159,7 @@
 }
 
 .cyber-input:focus {
-  animation: glow 2s infinite;
+  box-shadow: 0 0 3px #8a2be2;
   outline: none;
   background-color: rgba(26, 26, 26, 0.9);
 }
@@ -322,8 +324,8 @@ html {
 .wallet-adapter-button:hover {
   background-color: rgba(138, 43, 226, 0.2) !important;
   color: white !important;
-  animation: glow 1.5s infinite !important;
-  transform: translateY(-2px) !important;
+  box-shadow: 0 0 3px #8a2be2 !important;
+  transform: translateY(-1px) !important;
 }
 
 .wallet-adapter-button-trigger {

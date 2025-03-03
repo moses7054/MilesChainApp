@@ -78,11 +78,11 @@ const AdminInitForm: React.FC<AdminInitFormProps> = ({ adminAccountState }) => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.maxProjects) {
-      newErrors.maxProjects = "Maximum projects is required";
+      newErrors.maxProjects = "Maximum milestones is required";
     } else if (parseInt(formData.maxProjects) <= 0) {
-      newErrors.maxProjects = "Maximum projects must be greater than 0";
+      newErrors.maxProjects = "Maximum milestones must be greater than 0";
     } else if (parseInt(formData.maxProjects) > 10000) {
-      newErrors.maxProjects = "Maximum projects must be less than 10,000";
+      newErrors.maxProjects = "Maximum milestones must be less than 10,000";
     }
 
     if (!formData.feeBasisPoints) {
@@ -177,7 +177,7 @@ const AdminInitForm: React.FC<AdminInitFormProps> = ({ adminAccountState }) => {
   // Prepare confirmation details
   const confirmationDetails = [
     {
-      label: "Maximum Projects",
+      label: "Maximum Milestones",
       value: formData.maxProjects,
     },
     {
@@ -235,23 +235,23 @@ const AdminInitForm: React.FC<AdminInitFormProps> = ({ adminAccountState }) => {
               <p className="text-sm text-gray-400">
                 As admin, your wallet will have privileged access to:
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>Receive platform fees from completed projects</li>
+                  <li>Receive platform fees from completed milestones</li>
                   <li>Set global platform parameters</li>
-                  <li>Manage projects and participants</li>
+                  <li>Manage milestones and participants</li>
                 </ul>
               </p>
             </div>
           )}
 
           <CyberInput
-            label="Maximum Projects"
+            label="Maximum Milestones"
             name="maxProjects"
             id="maxProjects"
             type="text"
             inputSize="md"
             value={formData.maxProjects}
             onChange={handleChange}
-            placeholder="Enter maximum projects (e.g., 100)"
+            placeholder="Enter maximum milestones (e.g., 100)"
             error={errors.maxProjects}
             required
           />
@@ -421,7 +421,7 @@ const AdminPage = () => {
                       href="/admin/projects"
                       className="text-cyber-purple hover:text-cyber-pink transition-colors"
                     >
-                      Manage Projects
+                      Manage Milestones
                     </Link>
                   </li>
                 </ul>

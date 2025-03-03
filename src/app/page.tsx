@@ -1,7 +1,19 @@
+"use client";
+
 import WalletButton from "./components/WalletButton";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 
 export default function Home() {
+  const router = useRouter();
+  const [loadingPortal, setLoadingPortal] = useState<string | null>(null);
+
+  const navigateWithLoading = (path: string, portalName: string) => {
+    setLoadingPortal(portalName);
+    router.push(path);
+  };
+
   return (
     <main className="min-h-screen relative overflow-hidden">
       {/* Hexagon Grid Background */}
@@ -82,7 +94,7 @@ export default function Home() {
               Chain
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mt-2 sm:mt-4 px-2">
-              Revolutionizing Project Funding Through Blockchain
+              Revolutionizing Milestone Funding Through Blockchain
             </p>
           </div>
 
@@ -98,31 +110,70 @@ export default function Home() {
               <h3 className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 text-cyber-pink">
                 Admin Portal
               </h3>
-              <Link href="/admin" className="block">
-                <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
-                  Enter →
-                </button>
-              </Link>
+              <button
+                onClick={() => navigateWithLoading("/admin", "admin")}
+                className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4"
+                disabled={loadingPortal !== null}
+              >
+                {loadingPortal === "admin" ? (
+                  <span className="flex items-center justify-center">
+                    <LoadingSpinner
+                      size="sm"
+                      variant="pulse"
+                      className="mr-2"
+                    />
+                    Loading...
+                  </span>
+                ) : (
+                  "Enter →"
+                )}
+              </button>
             </div>
             <div className="cyber-card hover:scale-105 transition-transform p-3 sm:p-4 md:p-5">
               <h3 className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 text-cyber-pink">
                 NGO Portal
               </h3>
-              <Link href="/ngo" className="block">
-                <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
-                  Enter →
-                </button>
-              </Link>
+              <button
+                onClick={() => navigateWithLoading("/ngo", "ngo")}
+                className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4"
+                disabled={loadingPortal !== null}
+              >
+                {loadingPortal === "ngo" ? (
+                  <span className="flex items-center justify-center">
+                    <LoadingSpinner
+                      size="sm"
+                      variant="pulse"
+                      className="mr-2"
+                    />
+                    Loading...
+                  </span>
+                ) : (
+                  "Enter →"
+                )}
+              </button>
             </div>
             <div className="cyber-card hover:scale-105 transition-transform p-3 sm:p-4 md:p-5">
               <h3 className="text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 text-cyber-pink">
                 Company Portal
               </h3>
-              <Link href="/company" className="block">
-                <button className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4">
-                  Enter →
-                </button>
-              </Link>
+              <button
+                onClick={() => navigateWithLoading("/company", "company")}
+                className="cyber-button w-full text-xs sm:text-sm md:text-base py-1 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4"
+                disabled={loadingPortal !== null}
+              >
+                {loadingPortal === "company" ? (
+                  <span className="flex items-center justify-center">
+                    <LoadingSpinner
+                      size="sm"
+                      variant="pulse"
+                      className="mr-2"
+                    />
+                    Loading...
+                  </span>
+                ) : (
+                  "Enter →"
+                )}
+              </button>
             </div>
           </div>
         </div>
