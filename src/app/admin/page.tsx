@@ -12,6 +12,7 @@ import WalletButton from "../components/WalletButton";
 import * as anchor from "../utils/anchor";
 import TransactionConfirmationModal from "../components/TransactionConfirmationModal";
 import AdminCheck from "./components/AdminCheck";
+import { PublicKey } from "@solana/web3.js";
 
 // Extract components from the default export
 const {
@@ -22,7 +23,14 @@ const {
 } = CyberFormComponents;
 
 // Admin initialization form component
-const AdminInitForm = () => {
+interface AdminInitFormProps {
+  adminAccountState: {
+    exists: boolean;
+    isAdminWallet: boolean;
+  };
+}
+
+const AdminInitForm: React.FC<AdminInitFormProps> = ({ adminAccountState }) => {
   const wallet = useWallet();
   const { connection } = useConnection();
   const { handleTransaction } = useTransactionHandler();
@@ -30,6 +38,7 @@ const AdminInitForm = () => {
   const [formData, setFormData] = useState({
     maxProjects: "100",
     feeBasisPoints: "50", // 0.5%
+    usdcMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // Default Solana USDC mint
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -47,8 +56,8 @@ const AdminInitForm = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Only allow numbers
-    if (!/^\d*$/.test(value)) return;
+    // Only allow numbers for numeric fields
+    if (name !== "usdcMint" && !/^\d*$/.test(value)) return;
 
     setFormData((prev) => ({
       ...prev,
@@ -84,6 +93,17 @@ const AdminInitForm = () => {
       newErrors.feeBasisPoints = "Fee basis points cannot exceed 10,000 (100%)";
     }
 
+    if (!formData.usdcMint) {
+      newErrors.usdcMint = "USDC mint address is required";
+    } else {
+      try {
+        // Just validate the public key is valid
+        new PublicKey(formData.usdcMint);
+      } catch {
+        newErrors.usdcMint = "Invalid Solana public key";
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -94,16 +114,20 @@ const AdminInitForm = () => {
         throw new Error("Wallet not connected");
       }
 
-      // Get the max projects and fee basis points from the form
+      // Get parameters from the form
       const maxProjects = parseInt(formData.maxProjects);
       const feeBasisPoints = parseInt(formData.feeBasisPoints);
+      // This address will be used in our anchor util function
+      // We're validating it just for the UI
+      // but not passing it as it's hardcoded in the anchor.ts file
+      // new PublicKey(formData.usdcMint);
 
       // Set up the provider and program
-      // @ts-ignore - The walletAdapter may not exactly match the expected type
-      const provider = anchor.getProvider(walletAdapter as any, connection);
+      // @ts-expect-error - The walletAdapter may not exactly match the expected type
+      const provider = anchor.getProvider(walletAdapter, connection);
       const program = anchor.getMilestoneProgram(provider);
 
-      // Initialize the admin account
+      // Initialize the admin account with the connected wallet as the admin
       const txSignature = await anchor.initializeAdmin(
         program,
         maxProjects,
@@ -168,7 +192,13 @@ const AdminInitForm = () => {
       ).toFixed(2)}%`,
     },
     {
-      label: "Wallet",
+      label: "USDC Mint",
+      value: `${formData.usdcMint.slice(0, 4)}...${formData.usdcMint.slice(
+        -4
+      )}`,
+    },
+    {
+      label: "Admin Wallet",
       value: wallet.publicKey
         ? `${wallet.publicKey.toString().slice(0, 4)}...${wallet.publicKey
             .toString()
@@ -177,14 +207,41 @@ const AdminInitForm = () => {
     },
   ];
 
+  const confirmationMessage = adminAccountState.exists
+    ? "Please review the updated admin parameters before confirming."
+    : "You are about to initialize the admin account. This wallet will become the administrator of the Milestone Protocol with privileges to set fees and manage platform parameters. This action cannot be undone.";
+
   return (
     <div className="max-w-md mx-auto">
       <CyberForm onSubmit={handleSubmit}>
         <CyberFormSection title="Admin Initialization">
-          <p className="text-sm text-gray-400 mb-4">
-            Initialize the admin account by setting the maximum number of
-            projects and the fee basis points (1 basis point = 0.01%).
-          </p>
+          {adminAccountState.exists ? (
+            <p className="text-sm text-gray-400 mb-4">
+              Update admin settings by modifying the values below. This will
+              modify the existing admin account parameters.
+            </p>
+          ) : (
+            <div className="mb-6 border-l-4 border-cyber-neon p-4 bg-opacity-10 bg-cyber-neon">
+              <h3 className="text-cyber-neon font-medium mb-2">
+                Administrator Account Creation
+              </h3>
+              <p className="text-sm text-gray-400 mb-2">
+                <span className="text-cyber-pink font-medium">
+                  No admin account found.
+                </span>{" "}
+                You are about to become the administrator of the Milestone
+                Protocol.
+              </p>
+              <p className="text-sm text-gray-400">
+                As admin, your wallet will have privileged access to:
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li>Receive platform fees from completed projects</li>
+                  <li>Set global platform parameters</li>
+                  <li>Manage projects and participants</li>
+                </ul>
+              </p>
+            </div>
+          )}
 
           <CyberInput
             label="Maximum Projects"
@@ -212,6 +269,19 @@ const AdminInitForm = () => {
             required
           />
 
+          <CyberInput
+            label="USDC Mint Address"
+            name="usdcMint"
+            id="usdcMint"
+            type="text"
+            inputSize="md"
+            value={formData.usdcMint}
+            onChange={handleChange}
+            placeholder="Enter USDC mint address"
+            error={errors.usdcMint}
+            required
+          />
+
           <div className="mt-2 text-xs text-cyber-neon">
             <p>
               Fee:{" "}
@@ -228,7 +298,14 @@ const AdminInitForm = () => {
           <div className="text-cyber-pink text-sm mt-4">{errors.submit}</div>
         )}
 
-        <CyberSubmit value="Initialize Admin" isLoading={isLoading} />
+        <CyberSubmit
+          value={
+            adminAccountState.exists
+              ? "Update Admin Settings"
+              : "Initialize Admin Account"
+          }
+          isLoading={isLoading}
+        />
       </CyberForm>
 
       {/* Transaction Confirmation Modal */}
@@ -236,9 +313,13 @@ const AdminInitForm = () => {
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}
         onConfirm={handleConfirmTransaction}
-        title="Confirm Admin Initialization"
-        message="Please review the admin initialization parameters before confirming."
-        confirmButtonText="Initialize"
+        title={
+          adminAccountState.exists
+            ? "Confirm Admin Update"
+            : "Confirm Admin Initialization"
+        }
+        message={confirmationMessage}
+        confirmButtonText={adminAccountState.exists ? "Update" : "Initialize"}
         cancelButtonText="Cancel"
         details={confirmationDetails}
       />
@@ -301,7 +382,7 @@ const AdminPage = () => {
 
             {showAdminInitForm && (
               <div className="cyber-card p-6">
-                <AdminInitForm />
+                <AdminInitForm adminAccountState={adminAccountState} />
               </div>
             )}
 
